@@ -1,0 +1,15 @@
+{
+  "dados_importados": {
+    "hubspot": "2 👤 contatos"
+  },
+  "etapa_atual": 4,
+  "treinar_plan": true,
+  "treinar_kpis": false,
+  "treinar_ddl": true,
+  "treinar_docs": false,
+  "documentacao": "",
+  "treinamento_iniciado": true,
+  "treinamento_inicio": "2025-07-03T15:42:13.368187",
+  "treinamento_concluido": true,
+  "treinamento_fim": "2025-07-03T15:42:23.851856"
+}

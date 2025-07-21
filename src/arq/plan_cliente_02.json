@@ -1,0 +1,64 @@
+{
+  "_plan": [
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_kpis_definicoes",
+      "item_value": "The following columns are in the cli02_kpis_definicoes table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------------|:--------------|:------------|\n|  0 | kpisempresas    | public         | cli02_kpis_definicoes | id            | integer     |\n|  1 | kpisempresas    | public         | cli02_kpis_definicoes | id_client     | integer     |\n|  2 | kpisempresas    | public         | cli02_kpis_definicoes | nome_kpi      | text        |\n|  3 | kpisempresas    | public         | cli02_kpis_definicoes | descricao     | text        |\n|  4 | kpisempresas    | public         | cli02_kpis_definicoes | formula_sql   | text        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_customers_dataset",
+      "item_value": "The following columns are in the cli02_olist_customers_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                    | column_name              | data_type   |\n|---:|:----------------|:---------------|:------------------------------|:-------------------------|:------------|\n|  5 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_id              | text        |\n|  6 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_unique_id       | text        |\n|  7 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_zip_code_prefix | integer     |\n|  8 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_city            | text        |\n|  9 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_state           | text        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_geolocation_dataset",
+      "item_value": "The following columns are in the cli02_olist_geolocation_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                      | column_name                 | data_type   |\n|---:|:----------------|:---------------|:--------------------------------|:----------------------------|:------------|\n| 10 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_zip_code_prefix | integer     |\n| 11 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_lat             | numeric     |\n| 12 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_lng             | numeric     |\n| 13 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_city            | text        |\n| 14 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_state           | text        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_order_items_dataset",
+      "item_value": "The following columns are in the cli02_olist_order_items_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                      | column_name         | data_type                   |\n|---:|:----------------|:---------------|:--------------------------------|:--------------------|:----------------------------|\n| 15 | kpisempresas    | public         | cli02_olist_order_items_dataset | order_id            | text                        |\n| 16 | kpisempresas    | public         | cli02_olist_order_items_dataset | order_item_id       | integer                     |\n| 17 | kpisempresas    | public         | cli02_olist_order_items_dataset | product_id          | text                        |\n| 18 | kpisempresas    | public         | cli02_olist_order_items_dataset | seller_id           | text                        |\n| 19 | kpisempresas    | public         | cli02_olist_order_items_dataset | shipping_limit_date | timestamp without time zone |\n| 20 | kpisempresas    | public         | cli02_olist_order_items_dataset | price               | numeric                     |\n| 21 | kpisempresas    | public         | cli02_olist_order_items_dataset | freight_value       | numeric                     |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_order_payments_dataset",
+      "item_value": "The following columns are in the cli02_olist_order_payments_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                         | column_name          | data_type   |\n|---:|:----------------|:---------------|:-----------------------------------|:---------------------|:------------|\n| 22 | kpisempresas    | public         | cli02_olist_order_payments_dataset | order_id             | text        |\n| 23 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_sequential   | integer     |\n| 24 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_type         | text        |\n| 25 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_installments | integer     |\n| 26 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_value        | numeric     |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_order_reviews_dataset",
+      "item_value": "The following columns are in the cli02_olist_order_reviews_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                        | column_name             | data_type                   |\n|---:|:----------------|:---------------|:----------------------------------|:------------------------|:----------------------------|\n| 27 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_id               | text                        |\n| 28 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | order_id                | text                        |\n| 29 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_score            | integer                     |\n| 30 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_comment_title    | text                        |\n| 31 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_comment_message  | text                        |\n| 32 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_creation_date    | timestamp without time zone |\n| 33 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_answer_timestamp | timestamp without time zone |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_orders_dataset",
+      "item_value": "The following columns are in the cli02_olist_orders_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                 | column_name                   | data_type                   |\n|---:|:----------------|:---------------|:---------------------------|:------------------------------|:----------------------------|\n| 34 | kpisempresas    | public         | cli02_olist_orders_dataset | order_id                      | text                        |\n| 35 | kpisempresas    | public         | cli02_olist_orders_dataset | customer_id                   | text                        |\n| 36 | kpisempresas    | public         | cli02_olist_orders_dataset | order_status                  | text                        |\n| 37 | kpisempresas    | public         | cli02_olist_orders_dataset | order_purchase_timestamp      | timestamp without time zone |\n| 38 | kpisempresas    | public         | cli02_olist_orders_dataset | order_approved_at             | timestamp without time zone |\n| 39 | kpisempresas    | public         | cli02_olist_orders_dataset | order_delivered_carrier_date  | timestamp without time zone |\n| 40 | kpisempresas    | public         | cli02_olist_orders_dataset | order_delivered_customer_date | timestamp without time zone |\n| 41 | kpisempresas    | public         | cli02_olist_orders_dataset | order_estimated_delivery_date | date                        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_products_dataset",
+      "item_value": "The following columns are in the cli02_olist_products_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                   | column_name                | data_type   |\n|---:|:----------------|:---------------|:-----------------------------|:---------------------------|:------------|\n| 42 | kpisempresas    | public         | cli02_olist_products_dataset | product_id                 | text        |\n| 43 | kpisempresas    | public         | cli02_olist_products_dataset | product_category_name      | text        |\n| 44 | kpisempresas    | public         | cli02_olist_products_dataset | product_name_lenght        | numeric     |\n| 45 | kpisempresas    | public         | cli02_olist_products_dataset | product_description_lenght | numeric     |\n| 46 | kpisempresas    | public         | cli02_olist_products_dataset | product_photos_qty         | numeric     |\n| 47 | kpisempresas    | public         | cli02_olist_products_dataset | product_weight_g           | numeric     |\n| 48 | kpisempresas    | public         | cli02_olist_products_dataset | product_length_cm          | numeric     |\n| 49 | kpisempresas    | public         | cli02_olist_products_dataset | product_height_cm          | numeric     |\n| 50 | kpisempresas    | public         | cli02_olist_products_dataset | product_width_cm           | numeric     |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_olist_sellers_dataset",
+      "item_value": "The following columns are in the cli02_olist_sellers_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                  | column_name            | data_type   |\n|---:|:----------------|:---------------|:----------------------------|:-----------------------|:------------|\n| 51 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_id              | text        |\n| 52 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_zip_code_prefix | integer     |\n| 53 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_city            | text        |\n| 54 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_state           | text        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli02_product_category_name_translation",
+      "item_value": "The following columns are in the cli02_product_category_name_translation table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                              | column_name                   | data_type   |\n|---:|:----------------|:---------------|:----------------------------------------|:------------------------------|:------------|\n| 55 | kpisempresas    | public         | cli02_product_category_name_translation | product_category_name         | text        |\n| 56 | kpisempresas    | public         | cli02_product_category_name_translation | product_category_name_english | text        |"
+    }
+  ]
+}

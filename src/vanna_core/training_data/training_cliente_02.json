@@ -1,0 +1,278 @@
+[
+  {
+    "id": "1209835-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_product_category_name_translation' é definido como: Contagem de registros em cli02_product_category_name_translation",
+    "content": "SELECT COUNT(*) FROM cli02_product_category_name_translation;"
+  },
+  {
+    "id": "1209833-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_products_dataset' é definido como: Contagem de registros em cli02_olist_products_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_products_dataset;"
+  },
+  {
+    "id": "3416510-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_order_payments_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                         | column_name          | data_type   |\n|---:|:----------------|:---------------|:-----------------------------------|:---------------------|:------------|\n| 22 | kpisempresas    | public         | cli02_olist_order_payments_dataset | order_id             | text        |\n| 23 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_sequential   | integer     |\n| 24 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_type         | text        |\n| 25 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_installments | integer     |\n| 26 | kpisempresas    | public         | cli02_olist_order_payments_dataset | payment_value        | numeric     |"
+  },
+  {
+    "id": "1209842-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_review_score' é definido como: Nota média das avaliações: AVG(review_score) na tabela order_reviews.",
+    "content": "SELECT AVG(review_score) AS average_review_score FROM cli02_olist_order_reviews_dataset;"
+  },
+  {
+    "id": "1209832-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_orders_dataset' é definido como: Contagem de registros em cli02_olist_orders_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_orders_dataset;"
+  },
+  {
+    "id": "3416514-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_sellers_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                  | column_name            | data_type   |\n|---:|:----------------|:---------------|:----------------------------|:-----------------------|:------------|\n| 51 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_id              | text        |\n| 52 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_zip_code_prefix | integer     |\n| 53 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_city            | text        |\n| 54 | kpisempresas    | public         | cli02_olist_sellers_dataset | seller_state           | text        |"
+  },
+  {
+    "id": "1209841-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_payment_installments' é definido como: Número médio de parcelas por pedido: AVG(payment_installments) na tabela order_payments.",
+    "content": "SELECT AVG(payment_installments) AS average_payment_installments FROM cli02_olist_order_payments_dataset;"
+  },
+  {
+    "id": "12152297-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_orders_dataset (\n    order_id TEXT PRIMARY KEY,\n    customer_id TEXT,\n    order_status TEXT,\n    order_purchase_timestamp TIMESTAMP WITHOUT TIME ZONE,\n    order_approved_at TIMESTAMP WITHOUT TIME ZONE,\n    order_delivered_carrier_date TIMESTAMP WITHOUT TIME ZONE,\n    order_delivered_customer_date TIMESTAMP WITHOUT TIME ZONE,\n    order_estimated_delivery_date DATE\n);\n"
+  },
+  {
+    "id": "3416506-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_kpis_definicoes table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------------|:--------------|:------------|\n|  0 | kpisempresas    | public         | cli02_kpis_definicoes | id            | integer     |\n|  1 | kpisempresas    | public         | cli02_kpis_definicoes | id_client     | integer     |\n|  2 | kpisempresas    | public         | cli02_kpis_definicoes | nome_kpi      | text        |\n|  3 | kpisempresas    | public         | cli02_kpis_definicoes | descricao     | text        |\n|  4 | kpisempresas    | public         | cli02_kpis_definicoes | formula_sql   | text        |"
+  },
+  {
+    "id": "12152298-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_products_dataset (\n    product_id TEXT,\n    product_category_name TEXT,\n    product_name_lenght NUMERIC,\n    product_description_lenght NUMERIC,\n    product_photos_qty NUMERIC,\n    product_weight_g NUMERIC,\n    product_length_cm NUMERIC,\n    product_height_cm NUMERIC,\n    product_width_cm NUMERIC\n);\n"
+  },
+  {
+    "id": "3416507-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_customers_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                    | column_name              | data_type   |\n|---:|:----------------|:---------------|:------------------------------|:-------------------------|:------------|\n|  5 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_id              | text        |\n|  6 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_unique_id       | text        |\n|  7 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_zip_code_prefix | integer     |\n|  8 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_city            | text        |\n|  9 | kpisempresas    | public         | cli02_olist_customers_dataset | customer_state           | text        |"
+  },
+  {
+    "id": "3416512-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_orders_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                 | column_name                   | data_type                   |\n|---:|:----------------|:---------------|:---------------------------|:------------------------------|:----------------------------|\n| 34 | kpisempresas    | public         | cli02_olist_orders_dataset | order_id                      | text                        |\n| 35 | kpisempresas    | public         | cli02_olist_orders_dataset | customer_id                   | text                        |\n| 36 | kpisempresas    | public         | cli02_olist_orders_dataset | order_status                  | text                        |\n| 37 | kpisempresas    | public         | cli02_olist_orders_dataset | order_purchase_timestamp      | timestamp without time zone |\n| 38 | kpisempresas    | public         | cli02_olist_orders_dataset | order_approved_at             | timestamp without time zone |\n| 39 | kpisempresas    | public         | cli02_olist_orders_dataset | order_delivered_carrier_date  | timestamp without time zone |\n| 40 | kpisempresas    | public         | cli02_olist_orders_dataset | order_delivered_customer_date | timestamp without time zone |\n| 41 | kpisempresas    | public         | cli02_olist_orders_dataset | order_estimated_delivery_date | date                        |"
+  },
+  {
+    "id": "1209838-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_order_value' é definido como: Valor médio de pedido: SUM(price + freight_value) / COUNT(DISTINCT order_id), usando order_items.",
+    "content": "SELECT SUM(price + freight_value) / NULLIF(COUNT(DISTINCT order_id), 0) AS average_order_value \nFROM cli02_olist_order_items_dataset;"
+  },
+  {
+    "id": "12152292-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_customers_dataset (\n    customer_id TEXT,\n    customer_unique_id TEXT,\n    customer_zip_code_prefix INTEGER,\n    customer_city TEXT,\n    customer_state TEXT\n);\n"
+  },
+  {
+    "id": "3416513-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_products_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                   | column_name                | data_type   |\n|---:|:----------------|:---------------|:-----------------------------|:---------------------------|:------------|\n| 42 | kpisempresas    | public         | cli02_olist_products_dataset | product_id                 | text        |\n| 43 | kpisempresas    | public         | cli02_olist_products_dataset | product_category_name      | text        |\n| 44 | kpisempresas    | public         | cli02_olist_products_dataset | product_name_lenght        | numeric     |\n| 45 | kpisempresas    | public         | cli02_olist_products_dataset | product_description_lenght | numeric     |\n| 46 | kpisempresas    | public         | cli02_olist_products_dataset | product_photos_qty         | numeric     |\n| 47 | kpisempresas    | public         | cli02_olist_products_dataset | product_weight_g           | numeric     |\n| 48 | kpisempresas    | public         | cli02_olist_products_dataset | product_length_cm          | numeric     |\n| 49 | kpisempresas    | public         | cli02_olist_products_dataset | product_height_cm          | numeric     |\n| 50 | kpisempresas    | public         | cli02_olist_products_dataset | product_width_cm           | numeric     |"
+  },
+  {
+    "id": "1209827-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_customers_dataset' é definido como: Contagem de registros em cli02_olist_customers_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_customers_dataset;"
+  },
+  {
+    "id": "1209828-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_geolocation_dataset' é definido como: Contagem de registros em cli02_olist_geolocation_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_geolocation_dataset;"
+  },
+  {
+    "id": "1209844-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_freight_cost' é definido como: Custo médio de frete por pedido: AVG(freight_value) na tabela order_items.",
+    "content": "SELECT AVG(freight_value) AS average_freight_cost FROM cli02_olist_order_items_dataset;"
+  },
+  {
+    "id": "3416515-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_product_category_name_translation table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                              | column_name                   | data_type   |\n|---:|:----------------|:---------------|:----------------------------------------|:------------------------------|:------------|\n| 55 | kpisempresas    | public         | cli02_product_category_name_translation | product_category_name         | text        |\n| 56 | kpisempresas    | public         | cli02_product_category_name_translation | product_category_name_english | text        |"
+  },
+  {
+    "id": "1209847-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_review_score_per_state' é definido como: Nota média de avaliação por estado do cliente: SELECT c.customer_state, AVG(r.review_score) FROM order_reviews r JOIN orders o ON r.order_id = o.order_id JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state.",
+    "content": "SELECT c.customer_state, AVG(r.review_score) AS average_review_score_per_state \nFROM cli02_olist_order_reviews_dataset r \nJOIN cli02_olist_orders_dataset o ON r.order_id = o.order_id \nJOIN cli02_olist_customers_dataset c ON o.customer_id = c.customer_id \nGROUP BY c.customer_state;"
+  },
+  {
+    "id": "12152295-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_order_payments_dataset (\n    order_id TEXT,\n    payment_sequential INTEGER,\n    payment_type TEXT,\n    payment_installments INTEGER,\n    payment_value NUMERIC\n);\n"
+  },
+  {
+    "id": "1209831-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_order_reviews_dataset' é definido como: Contagem de registros em cli02_olist_order_reviews_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_order_reviews_dataset;"
+  },
+  {
+    "id": "12152299-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_sellers_dataset (\n    seller_id TEXT,\n    seller_zip_code_prefix INTEGER,\n    seller_city TEXT,\n    seller_state TEXT\n);\n"
+  },
+  {
+    "id": "3416509-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_order_items_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                      | column_name         | data_type                   |\n|---:|:----------------|:---------------|:--------------------------------|:--------------------|:----------------------------|\n| 15 | kpisempresas    | public         | cli02_olist_order_items_dataset | order_id            | text                        |\n| 16 | kpisempresas    | public         | cli02_olist_order_items_dataset | order_item_id       | integer                     |\n| 17 | kpisempresas    | public         | cli02_olist_order_items_dataset | product_id          | text                        |\n| 18 | kpisempresas    | public         | cli02_olist_order_items_dataset | seller_id           | text                        |\n| 19 | kpisempresas    | public         | cli02_olist_order_items_dataset | shipping_limit_date | timestamp without time zone |\n| 20 | kpisempresas    | public         | cli02_olist_order_items_dataset | price               | numeric                     |\n| 21 | kpisempresas    | public         | cli02_olist_order_items_dataset | freight_value       | numeric                     |"
+  },
+  {
+    "id": "12152291-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_kpis_definicoes (\n    id integer PRIMARY KEY,\n    id_client integer,\n    nome_kpi text,\n    descricao text,\n    formula_sql text\n);\n"
+  },
+  {
+    "id": "12152293-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_geolocation_dataset (\n    geolocation_zip_code_prefix INTEGER,\n    geolocation_lat NUMERIC,\n    geolocation_lng NUMERIC,\n    geolocation_city TEXT,\n    geolocation_state TEXT\n);\n"
+  },
+  {
+    "id": "1209843-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'top_5_products_by_sales' é definido como: Top 5 produtos mais vendidos por quantidade:\tSELECT product_id, COUNT(*) AS total_sold FROM order_items GROUP BY product_id ORDER BY total_sold DESC LIMIT 5.",
+    "content": "SELECT product_id, COUNT(*) AS total_sold \nFROM cli02_olist_order_items_dataset \nGROUP BY product_id \nORDER BY total_sold DESC \nLIMIT 5;"
+  },
+  {
+    "id": "1209837-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'total_orders' é definido como: Número total de pedidos: COUNT(order_id) na tabela orders.",
+    "content": "SELECT COUNT(order_id) AS total_orders FROM cli02_olist_orders_dataset;"
+  },
+  {
+    "id": "1209829-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_order_items_dataset' é definido como: Contagem de registros em cli02_olist_order_items_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_order_items_dataset;"
+  },
+  {
+    "id": "1209846-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'orders_per_customer_state' é definido como: Número de pedidos por estado do cliente: SELECT c.customer_state, COUNT(o.order_id) FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state.",
+    "content": "SELECT c.customer_state, COUNT(o.order_id) \nFROM cli02_olist_orders_dataset o \nJOIN cli02_olist_customers_dataset c ON o.customer_id = c.customer_id \nGROUP BY c.customer_state;"
+  },
+  {
+    "id": "3416508-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_geolocation_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                      | column_name                 | data_type   |\n|---:|:----------------|:---------------|:--------------------------------|:----------------------------|:------------|\n| 10 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_zip_code_prefix | integer     |\n| 11 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_lat             | numeric     |\n| 12 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_lng             | numeric     |\n| 13 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_city            | text        |\n| 14 | kpisempresas    | public         | cli02_olist_geolocation_dataset | geolocation_state           | text        |"
+  },
+  {
+    "id": "3416511-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli02_olist_order_reviews_dataset table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                        | column_name             | data_type                   |\n|---:|:----------------|:---------------|:----------------------------------|:------------------------|:----------------------------|\n| 27 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_id               | text                        |\n| 28 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | order_id                | text                        |\n| 29 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_score            | integer                     |\n| 30 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_comment_title    | text                        |\n| 31 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_comment_message  | text                        |\n| 32 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_creation_date    | timestamp without time zone |\n| 33 | kpisempresas    | public         | cli02_olist_order_reviews_dataset | review_answer_timestamp | timestamp without time zone |"
+  },
+  {
+    "id": "1209849-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_price_per_seller' é definido como: Preço médio de venda por vendedor: SELECT seller_id, AVG(price) FROM order_items GROUP BY seller_id.",
+    "content": "SELECT seller_id, AVG(price) AS average_price_per_seller FROM cli02_olist_order_items_dataset GROUP BY seller_id;"
+  },
+  {
+    "id": "12152294-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_order_items_dataset (\n    order_id TEXT,\n    order_item_id INTEGER,\n    product_id TEXT,\n    seller_id TEXT,\n    shipping_limit_date TIMESTAMP WITHOUT TIME ZONE,\n    price NUMERIC,\n    freight_value NUMERIC\n);\n"
+  },
+  {
+    "id": "12152296-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_olist_order_reviews_dataset (\n    review_id TEXT PRIMARY KEY,\n    order_id TEXT,\n    review_score INTEGER,\n    review_comment_title TEXT,\n    review_comment_message TEXT,\n    review_creation_date TIMESTAMP WITHOUT TIME ZONE,\n    review_answer_timestamp TIMESTAMP WITHOUT TIME ZONE\n);\n"
+  },
+  {
+    "id": "1209848-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'items_sold_per_seller' é definido como: Número de itens vendidos por vendedor: SELECT seller_id, COUNT(order_item_id) FROM order_items GROUP BY seller_id.",
+    "content": "SELECT seller_id, COUNT(order_item_id) AS items_sold_per_seller \nFROM cli02_olist_order_items_dataset \nGROUP BY seller_id;"
+  },
+  {
+    "id": "1209839-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'total_revenue' é definido como: Receita total gerada: SUM(price + freight_value) na tabela order_items.",
+    "content": "SELECT SUM(price + freight_value) AS total_revenue FROM cli02_olist_order_items_dataset;"
+  },
+  {
+    "id": "1209826-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_kpis_definicoes' é definido como: Contagem de registros em cli02_kpis_definicoes",
+    "content": "SELECT COUNT(*) FROM cli02_kpis_definicoes;"
+  },
+  {
+    "id": "1209840-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_delivery_time' é definido como: Tempo médio de entrega: AVG(order_delivered_customer_date - order_purchase_timestamp) para pedidos com status 'delivered' na tabela orders.",
+    "content": "SELECT AVG(order_delivered_customer_date - order_purchase_timestamp) AS average_delivery_time \nFROM cli02_olist_orders_dataset \nWHERE order_status = 'delivered';"
+  },
+  {
+    "id": "1209836-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'total_customers' é definido como: Número total de clientes únicos: COUNT(DISTINCT customer_unique_id) a partir da tabela customers.",
+    "content": "SELECT COUNT(DISTINCT customer_unique_id) AS total_customers FROM cli02_olist_customers_dataset;"
+  },
+  {
+    "id": "1209830-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_order_payments_dataset' é definido como: Contagem de registros em cli02_olist_order_payments_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_order_payments_dataset;"
+  },
+  {
+    "id": "1209850-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'customers_per_city' é definido como: Número de clientes por cidade: SELECT customer_city, COUNT(DISTINCT customer_id) FROM customers GROUP BY customer_city.",
+    "content": "SELECT customer_city, COUNT(DISTINCT customer_id) FROM cli02_olist_customers_dataset GROUP BY customer_city;"
+  },
+  {
+    "id": "1209851-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_coordinates_per_state' é definido como: Coordenadas médias (latitude, longitude) por estado: SELECT geolocation_state, AVG(geolocation_lat), AVG(geolocation_lng) FROM geolocation GROUP BY geolocation_state.",
+    "content": "SELECT geolocation_state, AVG(geolocation_lat) AS average_latitude, AVG(geolocation_lng) AS average_longitude \nFROM cli02_olist_geolocation_dataset \nGROUP BY geolocation_state;"
+  },
+  {
+    "id": "1209845-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'average_product_weight' é definido como: Peso médio dos produtos vendidos: AVG(product_weight_g) combinando produtos e order_items.",
+    "content": "SELECT AVG(p.product_weight_g) AS average_product_weight \nFROM cli02_olist_products_dataset p\nJOIN cli02_olist_order_items_dataset oi ON p.product_id = oi.product_id;"
+  },
+  {
+    "id": "1209834-sql",
+    "training_data_type": "sql",
+    "question": "O KPI 'count_cli02_olist_sellers_dataset' é definido como: Contagem de registros em cli02_olist_sellers_dataset",
+    "content": "SELECT COUNT(*) FROM cli02_olist_sellers_dataset;"
+  },
+  {
+    "id": "12152300-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli02_product_category_name_translation (\n    product_category_name TEXT,\n    product_category_name_english TEXT\n);\n"
+  }
+]

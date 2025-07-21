@@ -1,0 +1,1178 @@
+[
+    {
+        "id": "1045523-sql",
+        "training_data_type": "sql",
+        "question": "qual campanha teve maior quantidade de cliques por gasto no dia 15-02",
+        "content": "SELECT campaign_name, SUM(clicks) / SUM(mark_spent) AS clicks_per_spent FROM tabela_marketing WHERE c_date = '2021-02-15' GROUP BY campaign_name ORDER BY clicks_per_spent DESC LIMIT 1;"
+    },
+    {
+        "id": "1183626-sql",
+        "training_data_type": "sql",
+        "question": "What are the top-selling genres in terms of total sales?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name\nORDER BY TotalSales DESC;"
+    },
+    {
+        "id": "1183559-sql",
+        "training_data_type": "sql",
+        "question": "Can you show the total sales for each playlist?",
+        "content": "SELECT p.PlaylistId, p.Name, SUM(il.UnitPrice * il.Quantity) AS TotalSales\nFROM Playlist p\nJOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId\nJOIN Track t ON pt.TrackId = t.TrackId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY p.PlaylistId, p.Name;"
+    },
+    {
+        "id": "1183644-sql",
+        "training_data_type": "sql",
+        "question": "最も人気のないミュージシャンを見せてください",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks ASC\nLIMIT 1;"
+    },
+    {
+        "id": "1183583-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des roles?",
+        "content": "SELECT *\nFROM Role;"
+    },
+    {
+        "id": "10515858-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_TrackMediaTypeId] ON [Track] ([MediaTypeId])"
+    },
+    {
+        "id": "1183610-sql",
+        "training_data_type": "sql",
+        "question": "top 10 records for brand_engagement",
+        "content": "SELECT *\nFROM brand_engagement\nLIMIT 10;"
+    },
+    {
+        "id": "1183573-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les depot?",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1118518-sql",
+        "training_data_type": "sql",
+        "question": "Qual a taxa de cliques por impressão (CTR)?",
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM tabela_marketing;"
+    },
+    {
+        "id": "1183665-sql",
+        "training_data_type": "sql",
+        "question": "What is the average track count for hip-hop artists?",
+        "content": "SELECT AVG(TrackCount) AS AverageTrackCount\nFROM (\n    SELECT COUNT(*) AS TrackCount\n    FROM Artist a\n    JOIN Album al ON a.ArtistId = al.ArtistId\n    JOIN Track t ON al.AlbumId = t.AlbumId\n    JOIN Genre g ON t.GenreId = g.GenreId\n    WHERE g.Name = 'Hip Hop/Rap'\n    GROUP BY a.ArtistId\n) AS Subquery;"
+    },
+    {
+        "id": "1183646-sql",
+        "training_data_type": "sql",
+        "question": "Retrieve a list of customers who have made at least one purchase. Include their contact information, the total amount they’ve spent, the number of purchases, the average order value, and their most frequently purchased track_id.",
+        "content": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email, c.Phone, SUM(i.Total) AS TotalAmountSpent,\nCOUNT(DISTINCT i.InvoiceId) AS NumberOfPurchases, AVG(i.Total) AS AverageOrderValue,\n(SELECT il.TrackId FROM InvoiceLine il\nJOIN Invoice i ON il.InvoiceId = i.InvoiceId\nWHERE i.CustomerId = c.CustomerId\nGROUP BY il.TrackId\nORDER BY COUNT(*) DESC\nLIMIT 1) AS MostFrequentlyPurchasedTrackId\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Email, c.Phone;"
+    },
+    {
+        "id": "1183647-sql",
+        "training_data_type": "sql",
+        "question": "show all table names",
+        "content": "SELECT name\nFROM sqlite_master\nWHERE type = 'table'\nORDER BY name;"
+    },
+    {
+        "id": "10515856-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_TrackAlbumId] ON [Track] ([AlbumId])"
+    },
+    {
+        "id": "1183615-sql",
+        "training_data_type": "sql",
+        "question": "what is the top 20 record for TRANSACTION_HISTORY table",
+        "content": "SELECT *\nFROM TRANSACTION_HISTORY\nLIMIT 20;"
+    },
+    {
+        "id": "1088971-sql",
+        "training_data_type": "sql",
+        "question": "Me informe o  CPO",
+        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(clicks), 0)) AS CPO, (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) AS ROI FROM tabela_marketing;"
+    },
+    {
+        "id": "1094703-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'cost_per_click' é definido como: Custo por clique: mark_spent / clicks.",
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cost_per_click FROM tabela_marketing GROUP BY campaign_name;"
+    },
+    {
+        "id": "1183585-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des roles qui ont un code_role superieur à 5?",
+        "content": "SELECT *\nFROM Role\nWHERE code_role > 5;"
+    },
+    {
+        "id": "10515857-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_TrackGenreId] ON [Track] ([GenreId])"
+    },
+    {
+        "id": "1118519-sql",
+        "training_data_type": "sql",
+        "question": "Qual o total de gastos por campanha no dia 2021-02-20?",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
+    },
+    {
+        "id": "1183558-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each billing country?",
+        "content": "SELECT BillingCountry AS Country, SUM(Total) AS TotalSales\nFROM Invoice\nGROUP BY BillingCountry;"
+    },
+    {
+        "id": "10515841-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Customer]\n(\n    [CustomerId] INTEGER  NOT NULL,\n    [FirstName] NVARCHAR(40)  NOT NULL,\n    [LastName] NVARCHAR(20)  NOT NULL,\n    [Company] NVARCHAR(80),\n    [Address] NVARCHAR(70),\n    [City] NVARCHAR(40),\n    [State] NVARCHAR(40),\n    [Country] NVARCHAR(40),\n    [PostalCode] NVARCHAR(10),\n    [Phone] NVARCHAR(24),\n    [Fax] NVARCHAR(24),\n    [Email] NVARCHAR(60)  NOT NULL,\n    [SupportRepId] INTEGER,\n    CONSTRAINT [PK_Customer] PRIMARY KEY  ([CustomerId]),\n    FOREIGN KEY ([SupportRepId]) REFERENCES [Employee] ([EmployeeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "1183589-sql",
+        "training_data_type": "sql",
+        "question": "selectionner tous les tournees",
+        "content": "SELECT *\nFROM Tournee;"
+    },
+    {
+        "id": "1183574-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les depot qui ont lat differnet de nan?",
+        "content": "SELECT *\nFROM depot\nWHERE lat IS NOT NULL;"
+    },
+    {
+        "id": "1183568-sql",
+        "training_data_type": "sql",
+        "question": "艺术家的国籍？",
+        "content": "SELECT a.Name, e.Country\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Employee e ON al.ArtistId = e.EmployeeId;"
+    },
+    {
+        "id": "10515853-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_InvoiceLineInvoiceId] ON [InvoiceLine] ([InvoiceId])"
+    },
+    {
+        "id": "1183611-sql",
+        "training_data_type": "sql",
+        "question": "what is the top SALES_TAX_PERCENTAGE in tax_rates",
+        "content": "SELECT MAX(SALES_TAX_PERCENTAGE) AS MaxSalesTaxPercentage\nFROM tax_rates;"
+    },
+    {
+        "id": "1183596-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 5 genres by total sales?",
+        "content": "SELECT g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nINNER JOIN Track t ON g.GenreId = t.GenreId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1094712-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'average_revenue_per_order' é definido como: Receita média por pedido: revenue / orders.",
+        "content": "SELECT (SUM(revenue) / NULLIF(SUM(orders), 0)) AS average_revenue_per_order FROM tabela_vendas;"
+    },
+    {
+        "id": "1183667-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 Electronica/Dance artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Electronica/Dance'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183641-sql",
+        "training_data_type": "sql",
+        "question": "销量排名前十的艺术家有哪些？",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1094700-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'total_clicks' é definido como: Total de cliques recebidos por todas as campanhas.",
+        "content": "SELECT SUM(clicks) AS total_clicks FROM tabela_marketing;"
+    },
+    {
+        "id": "1183562-sql",
+        "training_data_type": "sql",
+        "question": "What is the most popular media type in terms of sales?",
+        "content": "SELECT mt.MediaTypeId, mt.Name AS MediaType, SUM(il.Quantity) AS TotalSales\nFROM MediaType mt\nJOIN Track t ON mt.MediaTypeId = t.MediaTypeId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY mt.MediaTypeId, mt.Name\nORDER BY TotalSales DESC\nLIMIT 1;"
+    },
+    {
+        "id": "1183599-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 7 artists by sales order by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nINNER JOIN Album al ON a.ArtistId = al.ArtistId\nINNER JOIN Track t ON al.AlbumId = t.AlbumId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 7;"
+    },
+    {
+        "id": "1183541-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 artists by sales? 使用中文",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1045353-sql",
+        "training_data_type": "sql",
+        "question": "Quais campanhas tiveram um gasto total entre 1.000.000 e 2.000.000?",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) BETWEEN 1000000 AND 2000000;"
+    },
+    {
+        "id": "1183639-sql",
+        "training_data_type": "sql",
+        "question": "top 4 unpopular musician",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks ASC\nLIMIT 4;"
+    },
+    {
+        "id": "1183564-sql",
+        "training_data_type": "sql",
+        "question": "What is the overall revenue generated from these sales?",
+        "content": "SELECT SUM(Total) AS OverallRevenue\nFROM Invoice;"
+    },
+    {
+        "id": "1118524-sql",
+        "training_data_type": "sql",
+        "question": "Quais as campanhas da categoria 'social' com maiores gastos?",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
+    },
+    {
+        "id": "1183603-sql",
+        "training_data_type": "sql",
+        "question": "Whath are the top 10 artists.",
+        "content": "SELECT *\nFROM Artist\nORDER BY ArtistId\nLIMIT 10;"
+    },
+    {
+        "id": "1183640-sql",
+        "training_data_type": "sql",
+        "question": "向我展示最受欢迎的10位艺术家的姓名",
+        "content": "SELECT a.Name\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY COUNT(*) DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183606-sql",
+        "training_data_type": "sql",
+        "question": "向我展示最受欢迎的5位艺术家的姓名",
+        "content": "SELECT a.Name\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY COUNT(*) DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183590-sql",
+        "training_data_type": "sql",
+        "question": "Tell me <<The Little Prince>> ISBN",
+        "content": "SELECT ISBN\nFROM Book\nWHERE Title = 'The Little Prince';"
+    },
+    {
+        "id": "1183622-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each playlist?",
+        "content": "SELECT p.PlaylistId, p.Name, SUM(il.UnitPrice * il.Quantity) AS TotalSales\nFROM Playlist p\nJOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId\nJOIN Track t ON pt.TrackId = t.TrackId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY p.PlaylistId, p.Name;"
+    },
+    {
+        "id": "1094709-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'campaign_with_highest_roi' é definido como: Nome da campanha (campaign_name) com o maior ROI.",
+        "content": "SELECT campaign_name, (SUM(revenue) - SUM(mark_spent)) / SUM(mark_spent) AS roi \nFROM tabela_marketing \nGROUP BY campaign_name \nORDER BY roi DESC \nLIMIT 1;"
+    },
+    {
+        "id": "1183618-sql",
+        "training_data_type": "sql",
+        "question": "show me the most unpopular musician",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks ASC\nLIMIT 1;"
+    },
+    {
+        "id": "1183595-sql",
+        "training_data_type": "sql",
+        "question": "What were the total sales by year?",
+        "content": "SELECT strftime('%Y', InvoiceDate) AS Year, SUM(Total) AS TotalSales\nFROM Invoice\nGROUP BY Year;"
+    },
+    {
+        "id": "1183614-sql",
+        "training_data_type": "sql",
+        "question": "what is the top 10 record for TRANSACTION_HISTORY table",
+        "content": "SELECT *\nFROM TRANSACTION_HISTORY\nLIMIT 10;"
+    },
+    {
+        "id": "1039993-sql",
+        "training_data_type": "sql",
+        "question": "How to select the top 10 lines of the table tabela_marketing",
+        "content": "SELECT * FROM tabela_marketing LIMIT 10;"
+    },
+    {
+        "id": "1183671-sql",
+        "training_data_type": "sql",
+        "question": "give me distinct artist name",
+        "content": "SELECT DISTINCT Name\nFROM Artist;"
+    },
+    {
+        "id": "1183540-sql",
+        "training_data_type": "sql",
+        "question": "Which Genre do you have?",
+        "content": "SELECT Name\nFROM Genre;"
+    },
+    {
+        "id": "10515840-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Artist]\n(\n    [ArtistId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Artist] PRIMARY KEY  ([ArtistId])\n)"
+    },
+    {
+        "id": "1118521-sql",
+        "training_data_type": "sql",
+        "question": "Qual o CPC (custo por clique) de cada campanha?",
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cpc FROM tabela_marketing GROUP BY campaign_name;"
+    },
+    {
+        "id": "1183545-sql",
+        "training_data_type": "sql",
+        "question": "What are the top-selling tracks?",
+        "content": "SELECT t.TrackId, t.Name AS TrackName, SUM(il.Quantity) AS TotalSales\nFROM Track t\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY t.TrackId, t.Name\nORDER BY TotalSales DESC;"
+    },
+    {
+        "id": "1183543-sql",
+        "training_data_type": "sql",
+        "question": "Can you show the sales distribution for each genre?",
+        "content": "SELECT g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name;"
+    },
+    {
+        "id": "1183593-sql",
+        "training_data_type": "sql",
+        "question": "What are the total sales by year? Remember to use sqlite syntax",
+        "content": "SELECT strftime('%Y', i.InvoiceDate) AS Year, SUM(i.Total) AS TotalSales\nFROM Invoice i\nGROUP BY Year;"
+    },
+    {
+        "id": "1183609-sql",
+        "training_data_type": "sql",
+        "question": "top 10 records for transaction_items",
+        "content": "SELECT *\nFROM transaction_items\nLIMIT 10;"
+    },
+    {
+        "id": "10515852-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_InvoiceCustomerId] ON [Invoice] ([CustomerId])"
+    },
+    {
+        "id": "1183663-sql",
+        "training_data_type": "sql",
+        "question": "Show me all kind of artists",
+        "content": "SELECT DISTINCT Name\nFROM Artist;"
+    },
+    {
+        "id": "1183591-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 11artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 11;"
+    },
+    {
+        "id": "1183668-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each artist?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity * il.UnitPrice) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name;"
+    },
+    {
+        "id": "1118527-sql",
+        "training_data_type": "sql",
+        "question": "Qual o total de conversões e receita por semana?",
+        "content": "SELECT DATE_TRUNC('week', c_date) AS semana, SUM(orders) AS total_conversoes, SUM(revenue) AS receita FROM tabela_marketing GROUP BY semana ORDER BY semana;"
+    },
+    {
+        "id": "1183555-sql",
+        "training_data_type": "sql",
+        "question": "Which genre has the highest total sales?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name\nORDER BY TotalSales DESC\nLIMIT 1;"
+    },
+    {
+        "id": "1183601-sql",
+        "training_data_type": "sql",
+        "question": "What are the most popular 3 artists?",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks DESC\nLIMIT 3;"
+    },
+    {
+        "id": "1183554-sql",
+        "training_data_type": "sql",
+        "question": "Can you provide the sales data for individual albums?",
+        "content": "SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales\nFROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.AlbumId, a.Title;"
+    },
+    {
+        "id": "1183588-sql",
+        "training_data_type": "sql",
+        "question": "selectionner tous les depots",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1183586-sql",
+        "training_data_type": "sql",
+        "question": "selectionner tous de la table depot",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1183657-sql",
+        "training_data_type": "sql",
+        "question": "show me all the genres with a total sales count for each genre",
+        "content": "SELECT g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name;"
+    },
+    {
+        "id": "1183649-sql",
+        "training_data_type": "sql",
+        "question": "What is the average sales per customer?",
+        "content": "SELECT AVG(TotalSales) AS AverageSalesPerCustomer\nFROM (\n    SELECT c.CustomerId, SUM(i.Total) AS TotalSales\n    FROM Customer c\n    JOIN Invoice i ON c.CustomerId = i.CustomerId\n    GROUP BY c.CustomerId\n) subquery;"
+    },
+    {
+        "id": "10515839-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Album]\n(\n    [AlbumId] INTEGER  NOT NULL,\n    [Title] NVARCHAR(160)  NOT NULL,\n    [ArtistId] INTEGER  NOT NULL,\n    CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),\n    FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "10515845-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [InvoiceLine]\n(\n    [InvoiceLineId] INTEGER  NOT NULL,\n    [InvoiceId] INTEGER  NOT NULL,\n    [TrackId] INTEGER  NOT NULL,\n    [UnitPrice] NUMERIC(10,2)  NOT NULL,\n    [Quantity] INTEGER  NOT NULL,\n    CONSTRAINT [PK_InvoiceLine] PRIMARY KEY  ([InvoiceLineId]),\n    FOREIGN KEY ([InvoiceId]) REFERENCES [Invoice] ([InvoiceId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "1094705-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'cost_per_order' é definido como: Custo por pedido: mark_spent / orders.",
+        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(orders), 0)) AS cost_per_order FROM tabela_marketing;"
+    },
+    {
+        "id": "10515844-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Invoice]\n(\n    [InvoiceId] INTEGER  NOT NULL,\n    [CustomerId] INTEGER  NOT NULL,\n    [InvoiceDate] DATETIME  NOT NULL,\n    [BillingAddress] NVARCHAR(70),\n    [BillingCity] NVARCHAR(40),\n    [BillingState] NVARCHAR(40),\n    [BillingCountry] NVARCHAR(40),\n    [BillingPostalCode] NVARCHAR(10),\n    [Total] NUMERIC(10,2)  NOT NULL,\n    CONSTRAINT [PK_Invoice] PRIMARY KEY  ([InvoiceId]),\n    FOREIGN KEY ([CustomerId]) REFERENCES [Customer] ([CustomerId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "1094704-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'cost_per_lead' é definido como: Custo por lead: mark_spent / leads.",
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(leads), 0) AS cost_per_lead FROM tabela_marketing GROUP BY campaign_name;"
+    },
+    {
+        "id": "1183628-sql",
+        "training_data_type": "sql",
+        "question": "What is the genre with the lowest sales?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name\nORDER BY TotalSales ASC\nLIMIT 1;"
+    },
+    {
+        "id": "1183653-sql",
+        "training_data_type": "sql",
+        "question": "What is the average track duration in minutes?",
+        "content": "SELECT AVG(Milliseconds) / (1000 * 60) AS AverageTrackDurationMinutes\nFROM Track;"
+    },
+    {
+        "id": "1183577-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les tournees?",
+        "content": "SELECT *\nFROM Tournee;"
+    },
+    {
+        "id": "1165967-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'count_cli01_kpis_definicoes' é definido como: Contagem de registros em cli01_kpis_definicoes",
+        "content": "SELECT COUNT(*) FROM cli01_kpis_definicoes;"
+    },
+    {
+        "id": "1183612-sql",
+        "training_data_type": "sql",
+        "question": "what is the top 10 record for items table",
+        "content": "SELECT *\nFROM items\nORDER BY item_id\nLIMIT 10;"
+    },
+    {
+        "id": "1183623-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each customer?",
+        "content": "SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSales\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY c.CustomerId, c.FirstName, c.LastName;"
+    },
+    {
+        "id": "1045094-sql",
+        "training_data_type": "sql",
+        "question": "qual campanha da categoria de influencer teve maior quantidade de clicks ",
+        "content": "SELECT campaign_name, SUM(clicks) AS total_clicks FROM tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_clicks DESC LIMIT 1;"
+    },
+    {
+        "id": "1183548-sql",
+        "training_data_type": "sql",
+        "question": "What are the top-selling albums?",
+        "content": "SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales\nFROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.AlbumId, a.Title\nORDER BY TotalSales DESC;"
+    },
+    {
+        "id": "1183632-sql",
+        "training_data_type": "sql",
+        "question": "what are the top 5 jazz artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183556-sql",
+        "training_data_type": "sql",
+        "question": "Can you show the distribution of sales across different media types?",
+        "content": "SELECT mt.Name AS MediaType, SUM(il.Quantity) AS TotalSales\nFROM MediaType mt\nJOIN Track t ON mt.MediaTypeId = t.MediaTypeId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY mt.MediaTypeId, mt.Name;"
+    },
+    {
+        "id": "1183607-sql",
+        "training_data_type": "sql",
+        "question": "top ten records from items table",
+        "content": "SELECT *\nFROM items\nLIMIT 10;"
+    },
+    {
+        "id": "1183557-sql",
+        "training_data_type": "sql",
+        "question": "How do sales vary based on the support representative assigned to a customer?",
+        "content": "SELECT e.EmployeeId, e.FirstName, e.LastName, SUM(i.Total) AS TotalSales\nFROM Employee e\nJOIN Customer c ON e.EmployeeId = c.SupportRepId\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY e.EmployeeId, e.FirstName, e.LastName;"
+    },
+    {
+        "id": "1183539-sql",
+        "training_data_type": "sql",
+        "question": "What is the database name?",
+        "content": "SELECT \"database\";"
+    },
+    {
+        "id": "1183600-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 7 artists based on sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 7;"
+    },
+    {
+        "id": "1118523-sql",
+        "training_data_type": "sql",
+        "question": "Qual a média de leads por categoria?",
+        "content": "SELECT category, AVG(leads) AS avg_leads FROM tabela_marketing GROUP BY category;"
+    },
+    {
+        "id": "1183656-sql",
+        "training_data_type": "sql",
+        "question": "show me all the genres",
+        "content": "SELECT Name\nFROM Genre;"
+    },
+    {
+        "id": "1183636-sql",
+        "training_data_type": "sql",
+        "question": "What are the different genres?",
+        "content": "SELECT DISTINCT Name\nFROM Genre;"
+    },
+    {
+        "id": "1183567-sql",
+        "training_data_type": "sql",
+        "question": "按销售额排名前五位的艺术家是谁？",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.UnitPrice * il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183560-sql",
+        "training_data_type": "sql",
+        "question": "What is the average unit price of tracks in each genre?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, AVG(t.UnitPrice) AS AverageUnitPrice\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nGROUP BY g.GenreId, g.Name;"
+    },
+    {
+        "id": "1045354-sql",
+        "training_data_type": "sql",
+        "question": "Quais campanhas tiveram um gasto maior que 2.000.000?",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) > 2000000;"
+    },
+    {
+        "id": "1183660-sql",
+        "training_data_type": "sql",
+        "question": "What are the top selling genres?",
+        "content": "SELECT g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name\nORDER BY TotalSales DESC;"
+    },
+    {
+        "id": "1183553-sql",
+        "training_data_type": "sql",
+        "question": "Can you provide a breakdown of sales by country?",
+        "content": "SELECT BillingCountry AS Country, SUM(Total) AS TotalSales\nFROM Invoice\nGROUP BY BillingCountry;"
+    },
+    {
+        "id": "1183549-sql",
+        "training_data_type": "sql",
+        "question": "What are the total row in album table?",
+        "content": "SELECT COUNT(*) AS TotalRows\nFROM Album;"
+    },
+    {
+        "id": "1183565-sql",
+        "training_data_type": "sql",
+        "question": "Who is the artist with the highest sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 1;"
+    },
+    {
+        "id": "1183658-sql",
+        "training_data_type": "sql",
+        "question": "show me all the sales for Hip Hop/Rap",
+        "content": "SELECT a.ArtistId, a.Name AS Artist, g.Name AS Genre, il.Quantity\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Hip Hop/Rap';"
+    },
+    {
+        "id": "10515855-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_PlaylistTrackTrackId] ON [PlaylistTrack] ([TrackId])"
+    },
+    {
+        "id": "1183594-sql",
+        "training_data_type": "sql",
+        "question": "how many usuario?",
+        "content": "SELECT COUNT(*) AS UsuarioCount\nFROM Usuario;"
+    },
+    {
+        "id": "1039999-sql",
+        "training_data_type": "sql",
+        "question": "Quais as tabelas presentes no banco de dados?",
+        "content": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+    },
+    {
+        "id": "1183605-sql",
+        "training_data_type": "sql",
+        "question": "向我展示最受欢迎的5位艺术家的销量",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183542-sql",
+        "training_data_type": "sql",
+        "question": "How many total customers?",
+        "content": "SELECT COUNT(*) AS TotalCustomers\nFROM Customer;"
+    },
+    {
+        "id": "1183604-sql",
+        "training_data_type": "sql",
+        "question": "Whath are the top 10 artts.",
+        "content": "SELECT *\nFROM Artist\nORDER BY ArtistId\nLIMIT 10;"
+    },
+    {
+        "id": "1094710-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'category_lead_rate' é definido como: Taxa de geração de leads por categoria: SUM(leads) / SUM(clicks) agrupado por category.",
+        "content": "SELECT category, SUM(leads) / NULLIF(SUM(clicks), 0) AS category_lead_rate FROM tabela_marketing GROUP BY category;"
+    },
+    {
+        "id": "1045114-sql",
+        "training_data_type": "sql",
+        "question": "me mostre a campanha que teve maior gasto no dia 20 de fevereiro",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name ORDER BY total_spent DESC LIMIT 1;"
+    },
+    {
+        "id": "1183581-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des tournees avec date entre juin et juillet?",
+        "content": "SELECT *\nFROM Tournee\nWHERE date >= '2023-06-01' AND date <= '2023-07-31';"
+    },
+    {
+        "id": "1183652-sql",
+        "training_data_type": "sql",
+        "question": "What is the average track duration?",
+        "content": "SELECT AVG(Milliseconds) AS AverageTrackDuration\nFROM Track;"
+    },
+    {
+        "id": "1118522-sql",
+        "training_data_type": "sql",
+        "question": "Qual o ROAS (retorno sobre o investimento publicitário) de cada campanha?",
+        "content": "SELECT campaign_name, SUM(revenue) / NULLIF(SUM(mark_spent), 0) AS roas FROM tabela_marketing GROUP BY campaign_name;"
+    },
+    {
+        "id": "10515850-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_CustomerSupportRepId] ON [Customer] ([SupportRepId])"
+    },
+    {
+        "id": "1183638-sql",
+        "training_data_type": "sql",
+        "question": "top 3 unpopular musician",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks ASC\nLIMIT 3;"
+    },
+    {
+        "id": "10515843-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Genre]\n(\n    [GenreId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Genre] PRIMARY KEY  ([GenreId])\n)"
+    },
+    {
+        "id": "1044983-sql",
+        "training_data_type": "sql",
+        "question": "me mostre os gastos por campanha no dia 20-02",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
+    },
+    {
+        "id": "1183608-sql",
+        "training_data_type": "sql",
+        "question": "top 10 records for stores",
+        "content": "SELECT *\nFROM stores\nLIMIT 10;"
+    },
+    {
+        "id": "1165969-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'count_cli01_marketing' é definido como: Contagem de registros em cli01_marketing",
+        "content": "SELECT COUNT(*) FROM cli01_marketing;"
+    },
+    {
+        "id": "1183550-sql",
+        "training_data_type": "sql",
+        "question": "What isd last row in album table?",
+        "content": "SELECT *\nFROM Album\nORDER BY AlbumId DESC\nLIMIT 1;"
+    },
+    {
+        "id": "1183602-sql",
+        "training_data_type": "sql",
+        "question": "向我展示最受欢迎的5位艺术家",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1044323-sql",
+        "training_data_type": "sql",
+        "question": "me informe o nome das campanhas que tiveram maior gasto de mercado no ano de 2021",
+        "content": "SELECT campaign_name FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' ORDER BY mark_spent DESC;"
+    },
+    {
+        "id": "10515854-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_InvoiceLineTrackId] ON [InvoiceLine] ([TrackId])"
+    },
+    {
+        "id": "1183544-sql",
+        "training_data_type": "sql",
+        "question": "Can you please show me those rows in Album table which have [] comes?",
+        "content": "SELECT *\nFROM Album\nWHERE Title LIKE '%[%]%'"
+    },
+    {
+        "id": "1118525-sql",
+        "training_data_type": "sql",
+        "question": "Quais as campanhas da categoria 'influencer' com menores gastos?",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_spent ASC;"
+    },
+    {
+        "id": "1183572-sql",
+        "training_data_type": "sql",
+        "question": "give me all depot?",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1039995-sql",
+        "training_data_type": "sql",
+        "question": "Selecione as 10 primeiras linhas da tabela tabela_marketing",
+        "content": "SELECT * FROM tabela_marketing LIMIT 10;"
+    },
+    {
+        "id": "1183637-sql",
+        "training_data_type": "sql",
+        "question": "Who are the top artists?",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183617-sql",
+        "training_data_type": "sql",
+        "question": "show me all tables name",
+        "content": "SELECT name\nFROM sqlite_master\nWHERE type = 'table';"
+    },
+    {
+        "id": "1046530-sql",
+        "training_data_type": "sql",
+        "question": "me mostre os gastos semanais de cada campanha ",
+        "content": "WITH weekly_spent AS (\n    SELECT \n        campaign_name,\n        CASE \n            WHEN c_date BETWEEN '2021-02-01' AND '2021-02-07' THEN 'Semana 1'\n            WHEN c_date BETWEEN '2021-02-08' AND '2021-02-14' THEN 'Semana 2'\n            WHEN c_date BETWEEN '2021-02-15' AND '2021-02-21' THEN 'Semana 3'\n            WHEN c_date BETWEEN '2021-02-22' AND '2021-02-28' THEN 'Semana 4'\n        END AS semana,\n        SUM(mark_spent) AS total_spent\n    FROM tabela_marketing \n    WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28'\n    GROUP BY campaign_name, semana\n)\nSELECT * FROM weekly_spent\nORDER BY campaign_name, semana;"
+    },
+    {
+        "id": "1183580-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des tournees avec dateentre juin et juillet?",
+        "content": "SELECT *\nFROM Tournee\nWHERE date >= '2023-06-01' AND date <= '2023-07-31';"
+    },
+    {
+        "id": "10515849-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_AlbumArtistId] ON [Album] ([ArtistId])"
+    },
+    {
+        "id": "1183634-sql",
+        "training_data_type": "sql",
+        "question": "What are the different categories of artists?",
+        "content": "SELECT DISTINCT Name\nFROM Artist;"
+    },
+    {
+        "id": "1183643-sql",
+        "training_data_type": "sql",
+        "question": "売り上げトップ5のアーティストは？",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183651-sql",
+        "training_data_type": "sql",
+        "question": "Can you show me the artist name, all the record names and their sales for the top 2 artists?",
+        "content": "SELECT a.Name AS ArtistName, t.Name AS TrackName, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nWHERE a.ArtistId IN (\n    SELECT a.ArtistId\n    FROM Artist a\n    JOIN Album al ON a.ArtistId = al.ArtistId\n    JOIN Track t ON al.AlbumId = t.AlbumId\n    JOIN InvoiceLine il ON t.TrackId = il.TrackId\n    GROUP BY a.ArtistId\n    ORDER BY SUM(il.Quantity) DESC\n    LIMIT 2\n)\nGROUP BY a.ArtistId, a.Name, t.TrackId, t.Name;"
+    },
+    {
+        "id": "1183635-sql",
+        "training_data_type": "sql",
+        "question": "What are the different genres of artists?",
+        "content": "SELECT DISTINCT Name\nFROM Genre;"
+    },
+    {
+        "id": "1094706-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'total_spent' é definido como: Soma de todos os valores da coluna mark_spent.",
+        "content": "SELECT SUM(mark_spent) AS total_spent FROM tabela_marketing;"
+    },
+    {
+        "id": "1183661-sql",
+        "training_data_type": "sql",
+        "question": "Give me the customer's that were served by employee Jane Peacock?",
+        "content": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Employee e ON c.SupportRepId = e.EmployeeId\nWHERE e.FirstName = 'Jane' AND e.LastName = 'Peacock';"
+    },
+    {
+        "id": "1183659-sql",
+        "training_data_type": "sql",
+        "question": "show me all the sales by year for Hip Hop/Rap",
+        "content": "SELECT strftime('%Y', i.InvoiceDate) AS Year, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Invoice i ON il.InvoiceId = i.InvoiceId\nWHERE g.Name = 'Hip Hop/Rap'\nGROUP BY Year;"
+    },
+    {
+        "id": "1183598-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 7 artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nINNER JOIN Album al ON a.ArtistId = al.ArtistId\nINNER JOIN Track t ON al.AlbumId = t.AlbumId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 7;"
+    },
+    {
+        "id": "1183613-sql",
+        "training_data_type": "sql",
+        "question": "what is the top 10 record for SHIPPING_HISTORY table",
+        "content": "SELECT *\nFROM SHIPPING_HISTORY\nLIMIT 10;"
+    },
+    {
+        "id": "1183576-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les depots ?",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1044352-sql",
+        "training_data_type": "sql",
+        "question": "me informe os maiores gastos por campanhas no ano de 2021",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name ORDER BY total_spent DESC;"
+    },
+    {
+        "id": "1183654-sql",
+        "training_data_type": "sql",
+        "question": "Retrieve a list of customers who have made at least 5 purchase. \nInclude their contact information, the total amount they've spent, \nthe number of purchases, the average order value, and their most frequently purchased track_id.",
+        "content": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email, c.Phone, \n       SUM(i.Total) AS TotalAmountSpent,\n       COUNT(DISTINCT i.InvoiceId) AS NumberOfPurchases, \n       AVG(i.Total) AS AverageOrderValue,\n       (SELECT il.TrackId \n        FROM InvoiceLine il\n        JOIN Invoice i ON il.InvoiceId = i.InvoiceId\n        WHERE i.CustomerId = c.CustomerId\n        GROUP BY il.TrackId\n        ORDER BY COUNT(*) DESC\n        LIMIT 1) AS MostFrequentlyPurchasedTrackId\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Email, c.Phone\nHAVING COUNT(DISTINCT i.InvoiceId) >= 5;"
+    },
+    {
+        "id": "1183627-sql",
+        "training_data_type": "sql",
+        "question": "Which genre has the highest number of tracks available for sale?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, COUNT(*) AS TotalTracks\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nGROUP BY g.GenreId, g.Name\nORDER BY TotalTracks DESC\nLIMIT 1;"
+    },
+    {
+        "id": "1183597-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nINNER JOIN Album al ON a.ArtistId = al.ArtistId\nINNER JOIN Track t ON al.AlbumId = t.AlbumId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183570-sql",
+        "training_data_type": "sql",
+        "question": "我想看一下数据库中的CEN_NORM.TB_HIS_ZY_Adm_Reg表",
+        "content": "SELECT *\nFROM CEN_NORM.TB_HIS_ZY_Adm_Reg;"
+    },
+    {
+        "id": "1183648-sql",
+        "training_data_type": "sql",
+        "question": "Print name of those employees who are older than 55 years",
+        "content": "SELECT FirstName, LastName\nFROM Employee\nWHERE strftime('%Y', BirthDate) < strftime('%Y', date('now', '-55 years'));"
+    },
+    {
+        "id": "1183551-sql",
+        "training_data_type": "sql",
+        "question": "What is the average sales per artist?",
+        "content": "SELECT AVG(subquery.TotalSales) AS AverageSalesPerArtist\nFROM (\n    SELECT a.ArtistId, SUM(il.Quantity * il.UnitPrice) AS TotalSales\n    FROM Artist a\n    JOIN Album al ON a.ArtistId = al.ArtistId\n    JOIN Track t ON al.AlbumId = t.AlbumId\n    JOIN InvoiceLine il ON t.TrackId = il.TrackId\n    GROUP BY a.ArtistId\n) subquery;"
+    },
+    {
+        "id": "10515846-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [MediaType]\n(\n    [MediaTypeId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_MediaType] PRIMARY KEY  ([MediaTypeId])\n)"
+    },
+    {
+        "id": "10515848-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Track]\n(\n    [TrackId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(200)  NOT NULL,\n    [AlbumId] INTEGER,\n    [MediaTypeId] INTEGER  NOT NULL,\n    [GenreId] INTEGER,\n    [Composer] NVARCHAR(220),\n    [Milliseconds] INTEGER  NOT NULL,\n    [Bytes] INTEGER,\n    [UnitPrice] NUMERIC(10,2)  NOT NULL,\n    CONSTRAINT [PK_Track] PRIMARY KEY  ([TrackId]),\n    FOREIGN KEY ([AlbumId]) REFERENCES [Album] ([AlbumId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([GenreId]) REFERENCES [Genre] ([GenreId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([MediaTypeId]) REFERENCES [MediaType] ([MediaTypeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "1183664-sql",
+        "training_data_type": "sql",
+        "question": "What are the most popular hip-hop artists?",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Hip Hop/Rap'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks DESC\nLIMIT 3;"
+    },
+    {
+        "id": "1094702-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'conversion_rate' é definido como: Taxa de conversão em leads: leads / clicks * 100.",
+        "content": "SELECT (SUM(leads) * 100.0 / NULLIF(SUM(clicks), 0)) AS conversion_rate FROM tabela_marketing;"
+    },
+    {
+        "id": "1183569-sql",
+        "training_data_type": "sql",
+        "question": "我想看一下数据库中的表都有什么",
+        "content": "SELECT name\nFROM sqlite_master\nWHERE type = 'table';"
+    },
+    {
+        "id": "1183579-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des tournees?",
+        "content": "SELECT *\nFROM Tournee;"
+    },
+    {
+        "id": "1183662-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 jazz artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183650-sql",
+        "training_data_type": "sql",
+        "question": "Can you show me all the record names and their sales for the top 2 artists?",
+        "content": "SELECT t.Name AS TrackName, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nWHERE a.ArtistId IN (\n    SELECT a.ArtistId\n    FROM Artist a\n    JOIN Album al ON a.ArtistId = al.ArtistId\n    JOIN Track t ON al.AlbumId = t.AlbumId\n    JOIN InvoiceLine il ON t.TrackId = il.TrackId\n    GROUP BY a.ArtistId\n    ORDER BY SUM(il.Quantity) DESC\n    LIMIT 2\n)\nGROUP BY t.TrackId, t.Name;"
+    },
+    {
+        "id": "1183547-sql",
+        "training_data_type": "sql",
+        "question": "What are the low 7 artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nINNER JOIN Album al ON a.ArtistId = al.ArtistId\nINNER JOIN Track t ON al.AlbumId = t.AlbumId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales ASC\nLIMIT 7;"
+    },
+    {
+        "id": "1183633-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 5 jazz artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1044982-sql",
+        "training_data_type": "sql",
+        "question": " qual foi o gasto total em fevereiro de 2021?",
+        "content": "SELECT SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28';"
+    },
+    {
+        "id": "1183552-sql",
+        "training_data_type": "sql",
+        "question": "What is the average sales per genre?",
+        "content": "SELECT AVG(TotalSales) AS AverageSalesPerGenre\nFROM (\n    SELECT g.GenreId, SUM(il.Quantity) AS TotalSales\n    FROM Genre g\n    JOIN Track t ON g.GenreId = t.GenreId\n    JOIN InvoiceLine il ON t.TrackId = il.TrackId\n    GROUP BY g.GenreId\n) subquery;"
+    },
+    {
+        "id": "1183575-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les depots?",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1044390-sql",
+        "training_data_type": "sql",
+        "question": "me informe as campanhas da categoria social que tiveram maiores gastos",
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
+    },
+    {
+        "id": "1094708-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'return_on_investment' é definido como: ROI: (revenue - mark_spent) / mark_spent * 100.",
+        "content": "SELECT (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) * 100 AS return_on_investment FROM tabela_marketing;"
+    },
+    {
+        "id": "1183631-sql",
+        "training_data_type": "sql",
+        "question": "what are the top 5 jazz artists by sales？",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183624-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each employee?",
+        "content": "SELECT e.EmployeeId, e.FirstName, e.LastName, SUM(i.Total) AS TotalSales\nFROM Employee e\nJOIN Customer c ON e.EmployeeId = c.SupportRepId\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY e.EmployeeId, e.FirstName, e.LastName;"
+    },
+    {
+        "id": "1183571-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales for each genre?",
+        "content": "SELECT g.GenreId, g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.GenreId, g.Name;"
+    },
+    {
+        "id": "10515847-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Playlist]\n(\n    [PlaylistId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Playlist] PRIMARY KEY  ([PlaylistId])\n)"
+    },
+    {
+        "id": "1183630-sql",
+        "training_data_type": "sql",
+        "question": "What is the total sales of each individual artist?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name;"
+    },
+    {
+        "id": "10515851-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE INDEX [IFK_EmployeeReportsTo] ON [Employee] ([ReportsTo])"
+    },
+    {
+        "id": "1183619-sql",
+        "training_data_type": "sql",
+        "question": "show me the top 3 unpopular musician",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalTracks ASC\nLIMIT 3;"
+    },
+    {
+        "id": "1094699-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'total_impressions' é definido como: Soma total de impressões geradas em todas as campanhas.",
+        "content": "SELECT SUM(impressions) AS total_impressions FROM tabela_marketing;"
+    },
+    {
+        "id": "1183592-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 albums by sales?",
+        "content": "SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales\nFROM Album a\nINNER JOIN Track t ON a.AlbumId = t.AlbumId\nINNER JOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.AlbumId, a.Title\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183625-sql",
+        "training_data_type": "sql",
+        "question": "Can you provide a breakdown of total sales by employee and genre?",
+        "content": "SELECT e.EmployeeId, e.FirstName, e.LastName, g.GenreId, g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Employee e\nJOIN Customer c ON e.EmployeeId = c.SupportRepId\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nGROUP BY e.EmployeeId, e.FirstName, e.LastName, g.GenreId, g.Name;"
+    },
+    {
+        "id": "1183563-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 most purchased albums?",
+        "content": "SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalPurchases\nFROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.AlbumId, a.Title\nORDER BY TotalPurchases DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183645-sql",
+        "training_data_type": "sql",
+        "question": "how many RMAID_Campagne?",
+        "content": "SELECT COUNT(*) AS RMAID_Campagne_Count\nFROM RMAID_Campagne;"
+    },
+    {
+        "id": "1118526-sql",
+        "training_data_type": "sql",
+        "question": "Qual o total de receita e cliques para campanhas 'facebook_tier1' e 'instagram_blogger'?",
+        "content": "SELECT campaign_name, SUM(revenue) AS receita_total, SUM(clicks) AS total_clicks FROM tabela_marketing WHERE campaign_name IN ('facebook_tier1', 'instagram_blogger') GROUP BY campaign_name;"
+    },
+    {
+        "id": "1094707-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'total_revenue' é definido como: Soma total de revenue gerada pelas campanhas.",
+        "content": "SELECT SUM(revenue) AS total_revenue FROM tabela_marketing;"
+    },
+    {
+        "id": "1183546-sql",
+        "training_data_type": "sql",
+        "question": "What is the distribution of sales by country?",
+        "content": "SELECT BillingCountry AS Country, SUM(Total) AS TotalSales\nFROM Invoice\nGROUP BY BillingCountry;"
+    },
+    {
+        "id": "1183566-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 2 artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 2;"
+    },
+    {
+        "id": "10515842-ddl",
+        "training_data_type": "ddl",
+        "question": null,
+        "content": "CREATE TABLE [Employee]\n(\n    [EmployeeId] INTEGER  NOT NULL,\n    [LastName] NVARCHAR(20)  NOT NULL,\n    [FirstName] NVARCHAR(20)  NOT NULL,\n    [Title] NVARCHAR(30),\n    [ReportsTo] INTEGER,\n    [BirthDate] DATETIME,\n    [HireDate] DATETIME,\n    [Address] NVARCHAR(70),\n    [City] NVARCHAR(40),\n    [State] NVARCHAR(40),\n    [Country] NVARCHAR(40),\n    [PostalCode] NVARCHAR(10),\n    [Phone] NVARCHAR(24),\n    [Fax] NVARCHAR(24),\n    [Email] NVARCHAR(60),\n    CONSTRAINT [PK_Employee] PRIMARY KEY  ([EmployeeId]),\n    FOREIGN KEY ([ReportsTo]) REFERENCES [Employee] ([EmployeeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)"
+    },
+    {
+        "id": "1183584-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des roles ?",
+        "content": "SELECT *\nFROM Role;"
+    },
+    {
+        "id": "1183620-sql",
+        "training_data_type": "sql",
+        "question": "show me the top 3 unpopular musicians name",
+        "content": "SELECT a.Name\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nORDER BY COUNT(*) ASC\nLIMIT 3;"
+    },
+    {
+        "id": "1183561-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 5 genres in terms of total sales?",
+        "content": "SELECT g.Name AS Genre, SUM(il.Quantity) AS TotalSales\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY g.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1183655-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 10 Jazz artists by sales per year?",
+        "content": "SELECT a.ArtistId, a.Name, strftime('%Y', i.InvoiceDate) AS Year, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Invoice i ON il.InvoiceId = i.InvoiceId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nGROUP BY a.ArtistId, a.Name, Year\nORDER BY TotalSales DESC\nLIMIT 10;"
+    },
+    {
+        "id": "1183616-sql",
+        "training_data_type": "sql",
+        "question": "what is the top 20SHIPPING_CITY  for SHIPPING_HISTORY table",
+        "content": "SELECT SHIPPING_CITY\nFROM SHIPPING_HISTORY\nGROUP BY SHIPPING_CITY\nORDER BY COUNT(*) DESC\nLIMIT 20;"
+    },
+    {
+        "id": "3406618-doc",
+        "training_data_type": "documentation",
+        "question": null,
+        "content": "This is a SQLite database. For dates rememeber to use SQLite syntax."
+    },
+    {
+        "id": "1118520-sql",
+        "training_data_type": "sql",
+        "question": "Quais campanhas tiveram mais de 100.000 de receita?",
+        "content": "SELECT campaign_name, SUM(revenue) AS total_revenue FROM tabela_marketing GROUP BY campaign_name HAVING SUM(revenue) > 100000;"
+    },
+    {
+        "id": "1183670-sql",
+        "training_data_type": "sql",
+        "question": "What is the average unit price for each playlist?",
+        "content": "SELECT p.PlaylistId, p.Name, AVG(t.UnitPrice) AS AverageUnitPrice\nFROM Playlist p\nJOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId\nJOIN Track t ON pt.TrackId = t.TrackId\nGROUP BY p.PlaylistId, p.Name;"
+    },
+    {
+        "id": "1088970-sql",
+        "training_data_type": "sql",
+        "question": "Me motre o CTR",
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM tabela_marketing;"
+    },
+    {
+        "id": "1165958-sql",
+        "training_data_type": "sql",
+        "question": "Plano de treinamento do cliente 01",
+        "content": "[{\"item_type\": \"is\", \"item_group\": \"kpisempresas.public\", \"item_name\": \"cli01_kpis_definicoes\", \"item_value\": \"The following columns are in the cli01_kpis_definicoes table in the kpisempresas database:\\n\\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type   |\\n|---:|:----------------|:---------------|:----------------------|:--------------|:------------|\\n|  0 | kpisempresas    | public         | cli01_kpis_definicoes | id            | integer     |\\n|  1 | kpisempresas    | public         | cli01_kpis_definicoes | id_client     | integer     |\\n|  2 | kpisempresas    | public         | cli01_kpis_definicoes | nome_kpi      | text        |\\n|  3 | kpisempresas    | public         | cli01_kpis_definicoes | descricao     | text        |\\n|  4 | kpisempresas    | public         | cli01_kpis_definicoes | formula_sql   | text        |\"}, {\"item_type\": \"is\", \"item_group\": \"kpisempresas.public\", \"item_name\": \"cli01_marketing\", \"item_value\": \"The following columns are in the cli01_marketing table in the kpisempresas database:\\n\\n|    | table_catalog   | table_schema   | table_name      | column_name   | data_type   |\\n|---:|:----------------|:---------------|:----------------|:--------------|:------------|\\n|  5 | kpisempresas    | public         | cli01_marketing | id            | integer     |\\n|  6 | kpisempresas    | public         | cli01_marketing | c_date        | text        |\\n|  7 | kpisempresas    | public         | cli01_marketing | campaign_name | text        |\\n|  8 | kpisempresas    | public         | cli01_marketing | category      | text        |\\n|  9 | kpisempresas    | public         | cli01_marketing | campaign_id   | integer     |\\n| 10 | kpisempresas    | public         | cli01_marketing | impressions   | integer     |\\n| 11 | kpisempresas    | public         | cli01_marketing | mark_spent    | numeric     |\\n| 12 | kpisempresas    | public         | cli01_marketing | clicks        | integer     |\\n| 13 | kpisempresas    | public         | cli01_marketing | leads         | integer     |\\n| 14 | kpisempresas    | public         | cli01_marketing | orders        | integer     |\\n| 15 | kpisempresas    | public         | cli01_marketing | revenue       | numeric     |\"}]"
+    },
+    {
+        "id": "1183582-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste des depots?",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1183578-sql",
+        "training_data_type": "sql",
+        "question": "donne moi la liste de tous les tournees dont le chiffreaffaire est positif?",
+        "content": "SELECT *\nFROM Tournee\nWHERE chiffreaffaire > 0;"
+    },
+    {
+        "id": "1094701-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'click_through_rate' é definido como: Taxa de cliques: clicks / impressions * 100.",
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS click_through_rate FROM tabela_marketing;"
+    },
+    {
+        "id": "1183666-sql",
+        "training_data_type": "sql",
+        "question": "What genres do you have?",
+        "content": "SELECT Name\nFROM Genre;"
+    },
+    {
+        "id": "1183669-sql",
+        "training_data_type": "sql",
+        "question": "can you show me schema of this database?",
+        "content": "SELECT sql\nFROM sqlite_master\nWHERE type = 'table'\nORDER BY name;"
+    },
+    {
+        "id": "1183587-sql",
+        "training_data_type": "sql",
+        "question": "list des depots",
+        "content": "SELECT *\nFROM depot;"
+    },
+    {
+        "id": "1183621-sql",
+        "training_data_type": "sql",
+        "question": "show me the top 3 unpopular musician that totaltracks > 10",
+        "content": "SELECT a.ArtistId, a.Name, COUNT(*) AS TotalTracks\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.ArtistId, a.Name\nHAVING TotalTracks > 10\nORDER BY TotalTracks ASC\nLIMIT 3;"
+    },
+    {
+        "id": "1183629-sql",
+        "training_data_type": "sql",
+        "question": "What are the top 5 artists by sales?",
+        "content": "SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId\nJOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nGROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 5;"
+    },
+    {
+        "id": "1094711-sql",
+        "training_data_type": "sql",
+        "question": "O KPI 'average_spent_per_campaign' é definido como: Média de investimento (mark_spent) por campanha.",
+        "content": "SELECT campaign_name, AVG(mark_spent) AS average_spent_per_campaign FROM tabela_marketing GROUP BY campaign_name;"
+    }
+]

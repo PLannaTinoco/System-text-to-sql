@@ -1,0 +1,280 @@
+[
+  {
+    "table_name": "cli02_kpis_definicoes",
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer"
+      },
+      {
+        "name": "id_client",
+        "type": "integer"
+      },
+      {
+        "name": "nome_kpi",
+        "type": "text"
+      },
+      {
+        "name": "descricao",
+        "type": "text"
+      },
+      {
+        "name": "formula_sql",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_customers_dataset",
+    "columns": [
+      {
+        "name": "customer_id",
+        "type": "text"
+      },
+      {
+        "name": "customer_unique_id",
+        "type": "text"
+      },
+      {
+        "name": "customer_zip_code_prefix",
+        "type": "integer"
+      },
+      {
+        "name": "customer_city",
+        "type": "text"
+      },
+      {
+        "name": "customer_state",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_geolocation_dataset",
+    "columns": [
+      {
+        "name": "geolocation_zip_code_prefix",
+        "type": "integer"
+      },
+      {
+        "name": "geolocation_lat",
+        "type": "numeric"
+      },
+      {
+        "name": "geolocation_lng",
+        "type": "numeric"
+      },
+      {
+        "name": "geolocation_city",
+        "type": "text"
+      },
+      {
+        "name": "geolocation_state",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_order_items_dataset",
+    "columns": [
+      {
+        "name": "order_id",
+        "type": "text"
+      },
+      {
+        "name": "order_item_id",
+        "type": "integer"
+      },
+      {
+        "name": "product_id",
+        "type": "text"
+      },
+      {
+        "name": "seller_id",
+        "type": "text"
+      },
+      {
+        "name": "shipping_limit_date",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "price",
+        "type": "numeric"
+      },
+      {
+        "name": "freight_value",
+        "type": "numeric"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_order_payments_dataset",
+    "columns": [
+      {
+        "name": "order_id",
+        "type": "text"
+      },
+      {
+        "name": "payment_sequential",
+        "type": "integer"
+      },
+      {
+        "name": "payment_type",
+        "type": "text"
+      },
+      {
+        "name": "payment_installments",
+        "type": "integer"
+      },
+      {
+        "name": "payment_value",
+        "type": "numeric"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_order_reviews_dataset",
+    "columns": [
+      {
+        "name": "review_id",
+        "type": "text"
+      },
+      {
+        "name": "order_id",
+        "type": "text"
+      },
+      {
+        "name": "review_score",
+        "type": "integer"
+      },
+      {
+        "name": "review_comment_title",
+        "type": "text"
+      },
+      {
+        "name": "review_comment_message",
+        "type": "text"
+      },
+      {
+        "name": "review_creation_date",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "review_answer_timestamp",
+        "type": "timestamp without time zone"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_orders_dataset",
+    "columns": [
+      {
+        "name": "order_id",
+        "type": "text"
+      },
+      {
+        "name": "customer_id",
+        "type": "text"
+      },
+      {
+        "name": "order_status",
+        "type": "text"
+      },
+      {
+        "name": "order_purchase_timestamp",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "order_approved_at",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "order_delivered_carrier_date",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "order_delivered_customer_date",
+        "type": "timestamp without time zone"
+      },
+      {
+        "name": "order_estimated_delivery_date",
+        "type": "date"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_products_dataset",
+    "columns": [
+      {
+        "name": "product_id",
+        "type": "text"
+      },
+      {
+        "name": "product_category_name",
+        "type": "text"
+      },
+      {
+        "name": "product_name_lenght",
+        "type": "numeric"
+      },
+      {
+        "name": "product_description_lenght",
+        "type": "numeric"
+      },
+      {
+        "name": "product_photos_qty",
+        "type": "numeric"
+      },
+      {
+        "name": "product_weight_g",
+        "type": "numeric"
+      },
+      {
+        "name": "product_length_cm",
+        "type": "numeric"
+      },
+      {
+        "name": "product_height_cm",
+        "type": "numeric"
+      },
+      {
+        "name": "product_width_cm",
+        "type": "numeric"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_olist_sellers_dataset",
+    "columns": [
+      {
+        "name": "seller_id",
+        "type": "text"
+      },
+      {
+        "name": "seller_zip_code_prefix",
+        "type": "integer"
+      },
+      {
+        "name": "seller_city",
+        "type": "text"
+      },
+      {
+        "name": "seller_state",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "table_name": "cli02_product_category_name_translation",
+    "columns": [
+      {
+        "name": "product_category_name",
+        "type": "text"
+      },
+      {
+        "name": "product_category_name_english",
+        "type": "text"
+      }
+    ]
+  }
+]

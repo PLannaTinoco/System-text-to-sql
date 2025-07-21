@@ -1,0 +1,12 @@
+[
+  {
+    "table_name": "cli01_kpis_definicoes",
+    "columns": [
+      "id",
+      "id_client",
+      "nome_kpi",
+      "descricao",
+      "formula_sql"
+    ]
+  }
+]

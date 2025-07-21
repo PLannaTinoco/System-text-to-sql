@@ -1,0 +1,76 @@
+[
+  {
+    "table_name": "cli01_kpis_definicoes",
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer"
+      },
+      {
+        "name": "id_client",
+        "type": "integer"
+      },
+      {
+        "name": "nome_kpi",
+        "type": "text"
+      },
+      {
+        "name": "descricao",
+        "type": "text"
+      },
+      {
+        "name": "formula_sql",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "table_name": "cli01_marketing",
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer"
+      },
+      {
+        "name": "c_date",
+        "type": "date"
+      },
+      {
+        "name": "campaign_name",
+        "type": "text"
+      },
+      {
+        "name": "category",
+        "type": "text"
+      },
+      {
+        "name": "campaign_id",
+        "type": "integer"
+      },
+      {
+        "name": "impressions",
+        "type": "integer"
+      },
+      {
+        "name": "mark_spent",
+        "type": "numeric"
+      },
+      {
+        "name": "clicks",
+        "type": "integer"
+      },
+      {
+        "name": "leads",
+        "type": "integer"
+      },
+      {
+        "name": "orders",
+        "type": "integer"
+      },
+      {
+        "name": "revenue",
+        "type": "numeric"
+      }
+    ]
+  }
+]

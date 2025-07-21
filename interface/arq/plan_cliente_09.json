@@ -1,0 +1,10 @@
+{
+  "_plan": [
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli09_dados_contatos",
+      "item_value": "The following columns are in the cli09_dados_contatos table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name           | column_name      | data_type   |\n|---:|:----------------|:---------------|:---------------------|:-----------------|:------------|\n|  0 | kpisempresas    | public         | cli09_dados_contatos | id_hubspot       | text        |\n|  1 | kpisempresas    | public         | cli09_dados_contatos | nome             | text        |\n|  2 | kpisempresas    | public         | cli09_dados_contatos | email            | text        |\n|  3 | kpisempresas    | public         | cli09_dados_contatos | telefone         | text        |\n|  4 | kpisempresas    | public         | cli09_dados_contatos | empresa          | text        |\n|  5 | kpisempresas    | public         | cli09_dados_contatos | cargo            | text        |\n|  6 | kpisempresas    | public         | cli09_dados_contatos | data_criacao     | text        |\n|  7 | kpisempresas    | public         | cli09_dados_contatos | data_modificacao | text        |\n|  8 | kpisempresas    | public         | cli09_dados_contatos | importado_em     | text        |"
+    }
+  ]
+}
