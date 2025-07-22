@@ -41,6 +41,61 @@ try:
 except Exception as e:
     logging.error(f"Erro ao executar SQL: {e}")
 
+# Função para adicionar DDL e Documentation do backup JSON
+def adicionar_ddl_documentation_backup(vn, backup_path=None):
+    """Adiciona dados de treinamento DDL e Documentation a partir do backup JSON"""
+    
+    logging.info("Adicionando DDL e Documentation a partir do backup JSON...")
+    
+    if not backup_path:
+        backup_path = os.path.join(os.path.dirname(__file__), "arq", "backup.json")
+    
+    if not os.path.isfile(backup_path):
+        logging.warning("Backup JSON não encontrado: %s", backup_path)
+        return
+    
+    try:
+        with open(backup_path, "r", encoding="utf-8") as f:
+            treinos = json.load(f)
+        
+        ddl_count = 0
+        doc_count = 0
+        
+        for item in treinos:
+            training_type = item.get("training_data_type", "").lower()
+            content = (item.get("content") or "").strip()
+            
+            # Pular se não for DDL nem Documentation
+            if training_type not in ["ddl", "documentation"]:
+                continue
+            
+            # Pular se não tiver conteúdo
+            if not content:
+                continue
+            
+            try:
+                if training_type == "ddl":
+                    # Treinar DDL (sem pergunta)
+                    vn.train(ddl=content)
+                    ddl_count += 1
+                    logging.info("DDL treinado: %s", content[:50] + "..." if len(content) > 50 else content)
+                    
+                elif training_type == "documentation":
+                    # Treinar Documentation (sem pergunta)
+                    vn.train(documentation=content)
+                    doc_count += 1
+                    logging.info("Documentation treinado: %s", content[:50] + "..." if len(content) > 50 else content)
+                    
+            except Exception as e:
+                logging.error("Falha ao treinar %s '%s': %s", training_type, content[:30], e)
+        
+        logging.info("Treinamento concluído - DDL: %d, Documentation: %d", ddl_count, doc_count)
+        
+    except Exception as e:
+        logging.error("Erro ao processar backup JSON: %s", e)
+
+# ADICIONANDO DDL e Documentation antes da aplicação Flask
+
 # Adicionando dados de treinamento corretamente
 
 # #! função adicionar backup JSON
@@ -65,10 +120,11 @@ except Exception as e:
 # else:
 #     logging.warning("Backup JSON não encontrado: %s", backup_path)
 
+# adicionar_ddl_documentation_backup(vn)
+
 # logging.info("Listando dados de treinamento...")
 # training_data = vn.get_training_data()
 # print(training_data)
-
 
 logging.info("==== Iniciando Vanna Flask App ====")
 VannaFlaskApp(vn, allow_llm_to_see_data=True).run()
@@ -106,7 +162,6 @@ VannaFlaskApp(vn, allow_llm_to_see_data=True).run()
 #     except Exception as e:
 #         print(f"Erro ao remover {item_id}: {e}")
 
-
 # Salvando dados treinados em um arquivo JSON
 logging.info("Salvando dados treinados em arquivo...")
 training_data = vn.get_training_data()  # Atualiza
@@ -120,7 +175,6 @@ file = os.path.join("arq", "dados_treinados.json")
 with open(file, "w", encoding="utf-8") as f:
     json.dump(training_data_dict, f, indent=4, ensure_ascii=False)
 logging.info("Arquivo de dados treinados salvo em: %s", file)
-
 
 logging.info("Arquivo 'dados_treinados.json' criado com sucesso!")
 logging.info("==== Vanna Flask App - Encerrado ====")

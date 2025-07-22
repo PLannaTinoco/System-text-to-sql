@@ -3,7 +3,7 @@
         "id": "1045523-sql",
         "training_data_type": "sql",
         "question": "qual campanha teve maior quantidade de cliques por gasto no dia 15-02",
-        "content": "SELECT campaign_name, SUM(clicks) / SUM(mark_spent) AS clicks_per_spent FROM tabela_marketing WHERE c_date = '2021-02-15' GROUP BY campaign_name ORDER BY clicks_per_spent DESC LIMIT 1;"
+        "content": "SELECT campaign_name, SUM(clicks) / SUM(mark_spent) AS clicks_per_spent FROM cli01_tabela_marketing WHERE c_date = '2021-02-15' GROUP BY campaign_name ORDER BY clicks_per_spent DESC LIMIT 1;"
     },
     {
         "id": "1183626-sql",
@@ -51,7 +51,7 @@
         "id": "1118518-sql",
         "training_data_type": "sql",
         "question": "Qual a taxa de cliques por impressão (CTR)?",
-        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM tabela_marketing;"
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183665-sql",
@@ -87,13 +87,13 @@
         "id": "1088971-sql",
         "training_data_type": "sql",
         "question": "Me informe o  CPO",
-        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(clicks), 0)) AS CPO, (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) AS ROI FROM tabela_marketing;"
+        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(clicks), 0)) AS CPO, (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) AS ROI FROM cli01_tabela_marketing;"
     },
     {
         "id": "1094703-sql",
         "training_data_type": "sql",
         "question": "O KPI 'cost_per_click' é definido como: Custo por clique: mark_spent / clicks.",
-        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cost_per_click FROM tabela_marketing GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cost_per_click FROM cli01_tabela_marketing GROUP BY campaign_name;"
     },
     {
         "id": "1183585-sql",
@@ -111,7 +111,7 @@
         "id": "1118519-sql",
         "training_data_type": "sql",
         "question": "Qual o total de gastos por campanha no dia 2021-02-20?",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
     },
     {
         "id": "1183558-sql",
@@ -183,7 +183,7 @@
         "id": "1094700-sql",
         "training_data_type": "sql",
         "question": "O KPI 'total_clicks' é definido como: Total de cliques recebidos por todas as campanhas.",
-        "content": "SELECT SUM(clicks) AS total_clicks FROM tabela_marketing;"
+        "content": "SELECT SUM(clicks) AS total_clicks FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183562-sql",
@@ -207,7 +207,7 @@
         "id": "1045353-sql",
         "training_data_type": "sql",
         "question": "Quais campanhas tiveram um gasto total entre 1.000.000 e 2.000.000?",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) BETWEEN 1000000 AND 2000000;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) BETWEEN 1000000 AND 2000000;"
     },
     {
         "id": "1183639-sql",
@@ -225,7 +225,7 @@
         "id": "1118524-sql",
         "training_data_type": "sql",
         "question": "Quais as campanhas da categoria 'social' com maiores gastos?",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
     },
     {
         "id": "1183603-sql",
@@ -261,7 +261,7 @@
         "id": "1094709-sql",
         "training_data_type": "sql",
         "question": "O KPI 'campaign_with_highest_roi' é definido como: Nome da campanha (campaign_name) com o maior ROI.",
-        "content": "SELECT campaign_name, (SUM(revenue) - SUM(mark_spent)) / SUM(mark_spent) AS roi \nFROM tabela_marketing \nGROUP BY campaign_name \nORDER BY roi DESC \nLIMIT 1;"
+        "content": "SELECT campaign_name, (SUM(revenue) - SUM(mark_spent)) / SUM(mark_spent) AS roi \nFROM cli01_tabela_marketing \nGROUP BY campaign_name \nORDER BY roi DESC \nLIMIT 1;"
     },
     {
         "id": "1183618-sql",
@@ -285,7 +285,7 @@
         "id": "1039993-sql",
         "training_data_type": "sql",
         "question": "How to select the top 10 lines of the table tabela_marketing",
-        "content": "SELECT * FROM tabela_marketing LIMIT 10;"
+        "content": "SELECT * FROM cli01_tabela_marketing LIMIT 10;"
     },
     {
         "id": "1183671-sql",
@@ -309,7 +309,7 @@
         "id": "1118521-sql",
         "training_data_type": "sql",
         "question": "Qual o CPC (custo por clique) de cada campanha?",
-        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cpc FROM tabela_marketing GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(clicks), 0) AS cpc FROM cli01_tabela_marketing GROUP BY campaign_name;"
     },
     {
         "id": "1183545-sql",
@@ -363,7 +363,7 @@
         "id": "1118527-sql",
         "training_data_type": "sql",
         "question": "Qual o total de conversões e receita por semana?",
-        "content": "SELECT DATE_TRUNC('week', c_date) AS semana, SUM(orders) AS total_conversoes, SUM(revenue) AS receita FROM tabela_marketing GROUP BY semana ORDER BY semana;"
+        "content": "SELECT DATE_TRUNC('week', c_date) AS semana, SUM(orders) AS total_conversoes, SUM(revenue) AS receita FROM cli01_tabela_marketing GROUP BY semana ORDER BY semana;"
     },
     {
         "id": "1183555-sql",
@@ -423,7 +423,7 @@
         "id": "1094705-sql",
         "training_data_type": "sql",
         "question": "O KPI 'cost_per_order' é definido como: Custo por pedido: mark_spent / orders.",
-        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(orders), 0)) AS cost_per_order FROM tabela_marketing;"
+        "content": "SELECT (SUM(mark_spent) / NULLIF(SUM(orders), 0)) AS cost_per_order FROM cli01_tabela_marketing;"
     },
     {
         "id": "10515844-ddl",
@@ -435,7 +435,7 @@
         "id": "1094704-sql",
         "training_data_type": "sql",
         "question": "O KPI 'cost_per_lead' é definido como: Custo por lead: mark_spent / leads.",
-        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(leads), 0) AS cost_per_lead FROM tabela_marketing GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(mark_spent) / NULLIF(SUM(leads), 0) AS cost_per_lead FROM cli01_tabela_marketing GROUP BY campaign_name;"
     },
     {
         "id": "1183628-sql",
@@ -477,7 +477,7 @@
         "id": "1045094-sql",
         "training_data_type": "sql",
         "question": "qual campanha da categoria de influencer teve maior quantidade de clicks ",
-        "content": "SELECT campaign_name, SUM(clicks) AS total_clicks FROM tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_clicks DESC LIMIT 1;"
+        "content": "SELECT campaign_name, SUM(clicks) AS total_clicks FROM cli01_tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_clicks DESC LIMIT 1;"
     },
     {
         "id": "1183548-sql",
@@ -525,7 +525,7 @@
         "id": "1118523-sql",
         "training_data_type": "sql",
         "question": "Qual a média de leads por categoria?",
-        "content": "SELECT category, AVG(leads) AS avg_leads FROM tabela_marketing GROUP BY category;"
+        "content": "SELECT category, AVG(leads) AS avg_leads FROM cli01_tabela_marketing GROUP BY category;"
     },
     {
         "id": "1183656-sql",
@@ -555,7 +555,7 @@
         "id": "1045354-sql",
         "training_data_type": "sql",
         "question": "Quais campanhas tiveram um gasto maior que 2.000.000?",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) > 2000000;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name HAVING SUM(mark_spent) > 2000000;"
     },
     {
         "id": "1183660-sql",
@@ -627,13 +627,13 @@
         "id": "1094710-sql",
         "training_data_type": "sql",
         "question": "O KPI 'category_lead_rate' é definido como: Taxa de geração de leads por categoria: SUM(leads) / SUM(clicks) agrupado por category.",
-        "content": "SELECT category, SUM(leads) / NULLIF(SUM(clicks), 0) AS category_lead_rate FROM tabela_marketing GROUP BY category;"
+        "content": "SELECT category, SUM(leads) / NULLIF(SUM(clicks), 0) AS category_lead_rate FROM cli01_tabela_marketing GROUP BY category;"
     },
     {
         "id": "1045114-sql",
         "training_data_type": "sql",
         "question": "me mostre a campanha que teve maior gasto no dia 20 de fevereiro",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name ORDER BY total_spent DESC LIMIT 1;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name ORDER BY total_spent DESC LIMIT 1;"
     },
     {
         "id": "1183581-sql",
@@ -651,7 +651,7 @@
         "id": "1118522-sql",
         "training_data_type": "sql",
         "question": "Qual o ROAS (retorno sobre o investimento publicitário) de cada campanha?",
-        "content": "SELECT campaign_name, SUM(revenue) / NULLIF(SUM(mark_spent), 0) AS roas FROM tabela_marketing GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(revenue) / NULLIF(SUM(mark_spent), 0) AS roas FROM cli01_tabela_marketing GROUP BY campaign_name;"
     },
     {
         "id": "10515850-ddl",
@@ -675,7 +675,7 @@
         "id": "1044983-sql",
         "training_data_type": "sql",
         "question": "me mostre os gastos por campanha no dia 20-02",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date = '2021-02-20' GROUP BY campaign_name;"
     },
     {
         "id": "1183608-sql",
@@ -705,7 +705,7 @@
         "id": "1044323-sql",
         "training_data_type": "sql",
         "question": "me informe o nome das campanhas que tiveram maior gasto de mercado no ano de 2021",
-        "content": "SELECT campaign_name FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' ORDER BY mark_spent DESC;"
+        "content": "SELECT campaign_name FROM cli01_tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' ORDER BY mark_spent DESC;"
     },
     {
         "id": "10515854-ddl",
@@ -723,7 +723,7 @@
         "id": "1118525-sql",
         "training_data_type": "sql",
         "question": "Quais as campanhas da categoria 'influencer' com menores gastos?",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_spent ASC;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE category = 'influencer' GROUP BY campaign_name ORDER BY total_spent ASC;"
     },
     {
         "id": "1183572-sql",
@@ -735,7 +735,7 @@
         "id": "1039995-sql",
         "training_data_type": "sql",
         "question": "Selecione as 10 primeiras linhas da tabela tabela_marketing",
-        "content": "SELECT * FROM tabela_marketing LIMIT 10;"
+        "content": "SELECT * FROM cli01_tabela_marketing LIMIT 10;"
     },
     {
         "id": "1183637-sql",
@@ -753,7 +753,7 @@
         "id": "1046530-sql",
         "training_data_type": "sql",
         "question": "me mostre os gastos semanais de cada campanha ",
-        "content": "WITH weekly_spent AS (\n    SELECT \n        campaign_name,\n        CASE \n            WHEN c_date BETWEEN '2021-02-01' AND '2021-02-07' THEN 'Semana 1'\n            WHEN c_date BETWEEN '2021-02-08' AND '2021-02-14' THEN 'Semana 2'\n            WHEN c_date BETWEEN '2021-02-15' AND '2021-02-21' THEN 'Semana 3'\n            WHEN c_date BETWEEN '2021-02-22' AND '2021-02-28' THEN 'Semana 4'\n        END AS semana,\n        SUM(mark_spent) AS total_spent\n    FROM tabela_marketing \n    WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28'\n    GROUP BY campaign_name, semana\n)\nSELECT * FROM weekly_spent\nORDER BY campaign_name, semana;"
+        "content": "WITH weekly_spent AS (\n    SELECT \n        campaign_name,\n        CASE \n            WHEN c_date BETWEEN '2021-02-01' AND '2021-02-07' THEN 'Semana 1'\n            WHEN c_date BETWEEN '2021-02-08' AND '2021-02-14' THEN 'Semana 2'\n            WHEN c_date BETWEEN '2021-02-15' AND '2021-02-21' THEN 'Semana 3'\n            WHEN c_date BETWEEN '2021-02-22' AND '2021-02-28' THEN 'Semana 4'\n        END AS semana,\n        SUM(mark_spent) AS total_spent\n    FROM cli01_tabela_marketing \n    WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28'\n    GROUP BY campaign_name, semana\n)\nSELECT * FROM weekly_spent\nORDER BY campaign_name, semana;"
     },
     {
         "id": "1183580-sql",
@@ -795,7 +795,7 @@
         "id": "1094706-sql",
         "training_data_type": "sql",
         "question": "O KPI 'total_spent' é definido como: Soma de todos os valores da coluna mark_spent.",
-        "content": "SELECT SUM(mark_spent) AS total_spent FROM tabela_marketing;"
+        "content": "SELECT SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183661-sql",
@@ -831,7 +831,7 @@
         "id": "1044352-sql",
         "training_data_type": "sql",
         "question": "me informe os maiores gastos por campanhas no ano de 2021",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name ORDER BY total_spent DESC;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date BETWEEN '2021-01-01' AND '2021-12-31' GROUP BY campaign_name ORDER BY total_spent DESC;"
     },
     {
         "id": "1183654-sql",
@@ -891,7 +891,7 @@
         "id": "1094702-sql",
         "training_data_type": "sql",
         "question": "O KPI 'conversion_rate' é definido como: Taxa de conversão em leads: leads / clicks * 100.",
-        "content": "SELECT (SUM(leads) * 100.0 / NULLIF(SUM(clicks), 0)) AS conversion_rate FROM tabela_marketing;"
+        "content": "SELECT (SUM(leads) * 100.0 / NULLIF(SUM(clicks), 0)) AS conversion_rate FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183569-sql",
@@ -933,7 +933,7 @@
         "id": "1044982-sql",
         "training_data_type": "sql",
         "question": " qual foi o gasto total em fevereiro de 2021?",
-        "content": "SELECT SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28';"
+        "content": "SELECT SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE c_date BETWEEN '2021-02-01' AND '2021-02-28';"
     },
     {
         "id": "1183552-sql",
@@ -951,13 +951,13 @@
         "id": "1044390-sql",
         "training_data_type": "sql",
         "question": "me informe as campanhas da categoria social que tiveram maiores gastos",
-        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
+        "content": "SELECT campaign_name, SUM(mark_spent) AS total_spent FROM cli01_tabela_marketing WHERE category = 'social' GROUP BY campaign_name ORDER BY total_spent DESC;"
     },
     {
         "id": "1094708-sql",
         "training_data_type": "sql",
         "question": "O KPI 'return_on_investment' é definido como: ROI: (revenue - mark_spent) / mark_spent * 100.",
-        "content": "SELECT (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) * 100 AS return_on_investment FROM tabela_marketing;"
+        "content": "SELECT (SUM(revenue) - SUM(mark_spent)) / NULLIF(SUM(mark_spent), 0) * 100 AS return_on_investment FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183631-sql",
@@ -1005,7 +1005,7 @@
         "id": "1094699-sql",
         "training_data_type": "sql",
         "question": "O KPI 'total_impressions' é definido como: Soma total de impressões geradas em todas as campanhas.",
-        "content": "SELECT SUM(impressions) AS total_impressions FROM tabela_marketing;"
+        "content": "SELECT SUM(impressions) AS total_impressions FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183592-sql",
@@ -1035,13 +1035,13 @@
         "id": "1118526-sql",
         "training_data_type": "sql",
         "question": "Qual o total de receita e cliques para campanhas 'facebook_tier1' e 'instagram_blogger'?",
-        "content": "SELECT campaign_name, SUM(revenue) AS receita_total, SUM(clicks) AS total_clicks FROM tabela_marketing WHERE campaign_name IN ('facebook_tier1', 'instagram_blogger') GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, SUM(revenue) AS receita_total, SUM(clicks) AS total_clicks FROM cli01_tabela_marketing WHERE campaign_name IN ('facebook_tier1', 'instagram_blogger') GROUP BY campaign_name;"
     },
     {
         "id": "1094707-sql",
         "training_data_type": "sql",
         "question": "O KPI 'total_revenue' é definido como: Soma total de revenue gerada pelas campanhas.",
-        "content": "SELECT SUM(revenue) AS total_revenue FROM tabela_marketing;"
+        "content": "SELECT SUM(revenue) AS total_revenue FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183546-sql",
@@ -1101,7 +1101,7 @@
         "id": "1118520-sql",
         "training_data_type": "sql",
         "question": "Quais campanhas tiveram mais de 100.000 de receita?",
-        "content": "SELECT campaign_name, SUM(revenue) AS total_revenue FROM tabela_marketing GROUP BY campaign_name HAVING SUM(revenue) > 100000;"
+        "content": "SELECT campaign_name, SUM(revenue) AS total_revenue FROM cli01_tabela_marketing GROUP BY campaign_name HAVING SUM(revenue) > 100000;"
     },
     {
         "id": "1183670-sql",
@@ -1113,7 +1113,7 @@
         "id": "1088970-sql",
         "training_data_type": "sql",
         "question": "Me motre o CTR",
-        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM tabela_marketing;"
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS ctr FROM cli01_tabela_marketing;"
     },
     {
         "id": "1165958-sql",
@@ -1137,7 +1137,7 @@
         "id": "1094701-sql",
         "training_data_type": "sql",
         "question": "O KPI 'click_through_rate' é definido como: Taxa de cliques: clicks / impressions * 100.",
-        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS click_through_rate FROM tabela_marketing;"
+        "content": "SELECT (SUM(clicks) * 100.0 / NULLIF(SUM(impressions), 0)) AS click_through_rate FROM cli01_tabela_marketing;"
     },
     {
         "id": "1183666-sql",
@@ -1173,6 +1173,6 @@
         "id": "1094711-sql",
         "training_data_type": "sql",
         "question": "O KPI 'average_spent_per_campaign' é definido como: Média de investimento (mark_spent) por campanha.",
-        "content": "SELECT campaign_name, AVG(mark_spent) AS average_spent_per_campaign FROM tabela_marketing GROUP BY campaign_name;"
+        "content": "SELECT campaign_name, AVG(mark_spent) AS average_spent_per_campaign FROM cli01_tabela_marketing GROUP BY campaign_name;"
     }
 ]
