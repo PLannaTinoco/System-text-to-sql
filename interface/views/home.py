@@ -3,25 +3,49 @@
 import streamlit as st
 import sys
 import os
+import logging
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_home')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-HOME - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adicionar src ao path para importar vanna_core
 src_path = os.path.join(os.path.dirname(__file__), "..", "..", "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
+render_logger.info(f"🔧 [PATH] Src path adicionado: {src_path}")
 
 try:
     from vanna_core import usar_vn_ask, executar_sql_e_gerar_grafico, gerar_grafico_personalizado
     print("✅ [DEBUG] Funções importadas com sucesso do vanna_core!")
+    render_logger.info("✅ [IMPORT] Funções do vanna_core importadas com sucesso")
     print("   - usar_vn_ask: ", usar_vn_ask)
     print("   - executar_sql_e_gerar_grafico: ", executar_sql_e_gerar_grafico)
     print("   - gerar_grafico_personalizado: ", gerar_grafico_personalizado)
 except ImportError as e:
     print(f"❌ [DEBUG] Erro ao importar funções do vanna_core: {e}")
+    render_logger.error(f"❌ [IMPORT] Erro ao importar funções do vanna_core: {e}")
     st.error(f"Erro ao importar funções do vanna_core: {e}")
     st.stop()
 
 def mostrar_home():
     st.title("🤖 Chatbot de KPIs")
+    render_logger.info("🏠 [HOME] Página home acessada")
 
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
@@ -30,6 +54,7 @@ def mostrar_home():
 
     if mensagem:
         print(f"\n🚀 [DEBUG] NOVA MENSAGEM RECEBIDA: {mensagem}")
+        render_logger.info(f"💬 [CHAT] Nova pergunta recebida: {mensagem}")
         
         with st.spinner("🔍 Consultando a Vanna..."):
             vn = st.session_state.vanna
@@ -41,6 +66,7 @@ def mostrar_home():
             print(f"   - Email: {email}")
             print(f"   - ID Client: {id_client}")
             print(f"   - Gerar gráfico: False")
+            render_logger.info(f"🔄 [CHAT] Processando pergunta para cliente {id_client}")
 
             resultado = usar_vn_ask(
                 vn=vn,

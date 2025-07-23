@@ -2,10 +2,9 @@ from typing import Any, Dict, Optional
 import os
 import json
 import logging
-from runpy import run_path
 import sys
-import time
-from datetime import datetime           # ← importe datetime
+from runpy import run_path
+from datetime import datetime
 from dotenv import load_dotenv
 import requests
 import pandas as pd
@@ -24,6 +23,26 @@ from kpis_Setup import (
     gerar_schema_json,
     fetch_kpis
 )
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_core')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-CORE - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
+
  # ajuste o import conforme necessário
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
@@ -31,6 +50,9 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 API_KEY = os.getenv("API_KEY")
+
+render_logger.info("🔧 [ENV] Variáveis de ambiente carregadas")
+
 # Monkey patch para timeout global
 _original_post = requests.post
 def _patched_post(*args, **kwargs):
@@ -78,6 +100,8 @@ def get_training_data_ids(vn: VannaDefault) -> list[int]:
 def salvar_training_filtrado(vn, client_id):
     training_path = get_abs_path("vanna_core", "training_data", f"training_cliente_{client_id:02d}.json")
     backup_path = get_abs_path("arq", "dados_treinados.json")
+    
+    render_logger.info(f"📁 [FILE] Acessando arquivo backup: {backup_path}")
 
     with open(backup_path, "r", encoding="utf-8") as f:
         backup = json.load(f)
@@ -88,13 +112,16 @@ def salvar_training_filtrado(vn, client_id):
     filtrados_df = training_data[~training_data["id"].isin(ids_backup)]
     filtrados = filtrados_df.to_dict(orient="records")
 
+    render_logger.info(f"📝 [FILE] Gerando arquivo de treinamento: {training_path}")
     with open(training_path, "w", encoding="utf-8") as f:
         json.dump(filtrados, f, ensure_ascii=False, indent=2)
     print(f"Salvo {len(filtrados)} itens em {training_path}")
+    render_logger.info(f"✅ [FILE] Arquivo de treinamento salvo com {len(filtrados)} itens")
 
 def limpar_data_training_backup_only(vn):
     """Remove apenas dados que não estão no backup"""
     backup_path = get_abs_path("arq", "dados_treinados.json")
+    render_logger.info(f"📁 [FILE] Acessando backup para limpeza: {backup_path}")
     with open(backup_path, "r", encoding="utf-8") as f:
         dados = json.load(f)
     ids_backup = {item["id"] for item in dados if isinstance(item, dict) and "id" in item}
@@ -107,8 +134,10 @@ def limpar_data_training_backup_only(vn):
             try:
                 vn.remove_training_data(id=id)
                 print(f"Removido id {id} do modelo (não está no backup)")
+                render_logger.info(f"🗑️ [CLEANUP] Removido ID {id} do modelo")
             except Exception as e:
                 print(f"Erro ao remover id {id}: {e}")
+                render_logger.error(f"❌ [CLEANUP] Erro ao remover ID {id}: {e}")
 
 def save_training_plan(vn: VannaDefault, client_id: int):
     """
@@ -236,6 +265,8 @@ def treinar_com_ddl(id_client: int, vn: VannaDefault):
 
 def obter_id_client_por_email(email: str) -> int:
     logging.info("Buscando ID do cliente para o e-mail: %s", email)
+    render_logger.info(f"🔍 [DB] Buscando ID do cliente para email: {email}")
+    
     conn = psycopg2.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
@@ -248,28 +279,36 @@ def obter_id_client_por_email(email: str) -> int:
     row = cur.fetchone()
     cur.close()
     conn.close()
+    
     if not row:
+        render_logger.error(f"❌ [DB] Usuário não encontrado para email: {email}")
         raise ValueError(f"Usuário com e-mail '{email}' não encontrado.")
+    
     logging.info("ID do cliente encontrado: %d", row[0])
+    render_logger.info(f"✅ [DB] ID do cliente encontrado: {row[0]} para email: {email}")
     return row[0]
 
 
 def carregar_plan(id_client: int) -> list[dict]:
     """Lê ./arq/plan_cliente_XX.json e retorna lista de itens."""
     path = get_abs_path("arq", f"plan_cliente_{id_client:02d}.json")
+    render_logger.info(f"📁 [FILE] Carregando plano do arquivo: {path}")
     with open(path, "r", encoding="utf-8") as f:
         blob = json.load(f)
+    render_logger.info(f"✅ [FILE] Plano carregado com sucesso para cliente {id_client}")
     return blob.get("_plan", blob)
 
 
 def treinar_com_plan(id_client: int, vn: VannaDefault):
     plan = carregar_plan(id_client)
     logging.info("Treinando Vanna com plano de dados (%d itens)...", len(plan))
+    render_logger.info(f"🎯 [TRAIN] Iniciando treinamento com plano - {len(plan)} itens")
     vn.train(
         question=f"Plano de treinamento do cliente {id_client:02d}",
         sql=json.dumps(plan, ensure_ascii=False)
     )
     logging.info("Treinamento com plano concluído.")
+    render_logger.info("✅ [TRAIN] Treinamento com plano concluído")
 
 
 def treinar_com_kpis(id_client: int, vn: VannaDefault):
@@ -299,6 +338,8 @@ def setup_treinamento_cliente(id_client: int) -> VannaDefault:
     Prepara e faz fine-tuning do modelo Vanna para o cliente.
     Permite ao usuário escolher quais etapas executar.
     """
+    render_logger.info(f"🚀 [SETUP] Iniciando setup_treinamento_cliente para ID {id_client}")
+    
     vn = VannaDefault(model="jarves", api_key=os.getenv("API_KEY"))
     vn.connect_to_postgres(
         host=os.getenv("DB_HOST"),
@@ -307,28 +348,36 @@ def setup_treinamento_cliente(id_client: int) -> VannaDefault:
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD")
     )
+    render_logger.info("✅ [SETUP] Conexão com PostgreSQL estabelecida")
 
     # 1) tenta carregar plano salvo
     if load_training_data(vn, id_client):
         logging.info("Pulando geração de plano para cliente %02d.", id_client)
+        render_logger.info(f"✅ [SETUP] Training data carregado para cliente {id_client}")
         return vn
 
     # Verifica se já existe um arquivo de plan
     nome_plan = f"plan_cliente_{id_client:02d}.json"
     path_plan = os.path.join("arq", nome_plan)
+    render_logger.info(f"📁 [FILE] Verificando existência do plano: {path_plan}")
+    
     if os.path.exists(path_plan):
+        render_logger.info(f"✅ [FILE] Arquivo de plano encontrado: {path_plan}")
         usar_plan_existente = input(f"Já existe um plan salvo em {path_plan}. Deseja usá-lo? (s/N): ").strip().lower() == "s"
         if usar_plan_existente:
             with open(path_plan, "r", encoding="utf-8") as f:
                 plan_dict = json.load(f)
-
             logging.info("Usando plano existente: %s", path_plan)
+            render_logger.info(f"📖 [FILE] Usando plano existente: {path_plan}")
         else:
             plan_dict = gerar_plan_treinamento(id_client, vn, salvar_em_arquivo=True)
             logging.info("Novo plano gerado e salvo.")
+            render_logger.info("📝 [FILE] Novo plano gerado e salvo")
     else:
+        render_logger.info(f"❌ [FILE] Arquivo de plano não encontrado: {path_plan}")
         plan_dict = gerar_plan_treinamento(id_client, vn, salvar_em_arquivo=True)
         logging.info("Plano gerado e salvo.")
+        render_logger.info("📝 [FILE] Plano gerado e salvo")
    
     #plano = converter_plan_markdown_para_vanna(plan_dict)
     # Pergunta se deseja treinar o plano
@@ -367,13 +416,18 @@ def finalizar_sessao(vn: VannaDefault, id_client: int, historico: list[dict], em
     """
     Finaliza a sessão do cliente: salva histórico, backup de treinamento e limpa dados temporários.
     """
+    render_logger.info(f"🏁 [SESSION] Finalizando sessão para cliente {id_client} (email: {email})")
+    
     try:
         # salva histórico de perguntas
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         session_file = get_abs_path("hist", f"historico_cli{id_client:02d}_{ts}.json")
+        render_logger.info(f"📝 [FILE] Salvando histórico da sessão: {session_file}")
+        
         with open(session_file, "w", encoding="utf-8") as f:
             json.dump(historico, f, indent=2, ensure_ascii=False)
         logging.info("Histórico de sessão salvo em: %s", session_file)
+        render_logger.info(f"✅ [FILE] Histórico salvo com {len(historico)} entradas")
 
         # salva dados de treinamento filtrados
         salvar_training_filtrado(vn, id_client)
@@ -382,9 +436,11 @@ def finalizar_sessao(vn: VannaDefault, id_client: int, historico: list[dict], em
         limpar_data_training_backup_only(vn)
 
         logging.info("Finalização da sessão concluída com sucesso.")
+        render_logger.info("✅ [SESSION] Finalização da sessão concluída com sucesso")
 
     except Exception as e:
         logging.warning("Erro ao finalizar sessão do cliente: %s", e)
+        render_logger.error(f"❌ [SESSION] Erro ao finalizar sessão: {e}")
 
 
 def usar_vn_ask(vn, pergunta: str, email: str, id_client: int,

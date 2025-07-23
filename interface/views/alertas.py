@@ -5,10 +5,30 @@ import pandas as pd
 import os
 import sys
 import json
+import logging
 from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import contextlib
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_alertas')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-ALERTAS - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adicionar src ao path para importar funções
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
@@ -31,18 +51,22 @@ def get_db_connection():
 def mostrar_alertas():
     st.title("🚨 Central de Alertas")
     st.write("Configure e monitore alertas para seus KPIs e métricas importantes.")
+    render_logger.info("🚨 [ALERTAS] Página de alertas acessada")
     
     # Verifica se usuário está logado
     if "logado" not in st.session_state or not st.session_state["logado"]:
         st.error("Você precisa estar logado para acessar os alertas.")
+        render_logger.warning("⚠️ [ALERTAS] Tentativa de acesso sem login")
         return
     
     client_id = st.session_state.get("id_client")
     if not client_id:
         st.error("ID do cliente não encontrado. Faça login novamente.")
+        render_logger.error("❌ [ALERTAS] ID do cliente não encontrado na sessão")
         return
         
     nome_usuario = st.session_state.get("name", "usuário")
+    render_logger.info(f"✅ [ALERTAS] Usuário autenticado: {nome_usuario} (ID: {client_id})")
     
     # Obter alertas para verificar status
     alertas_ativos = obter_alertas_usuario(client_id)

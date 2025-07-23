@@ -1,10 +1,31 @@
-# auth_utils.py – validação e autenticação de usuário
+# auth_utils.py – validação e autenticação
+
 import json
 import streamlit as st
 import sys
 import os
 import pickle
+import logging
 from datetime import datetime
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_auth')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-AUTH - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adiciona caminhos necessários ao sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,16 +39,28 @@ if src_dir not in sys.path:
 
 def autenticar_usuario(email, senha):
     """Wrapper para importar e usar db_utils.autenticar_usuario"""
+    render_logger.info(f"🔐 [AUTH] Tentativa de autenticação para: {email}")
+    
     try:
         # Import dinâmico para evitar problemas de path
         import importlib.util
         db_utils_path = os.path.join(current_dir, "..", "utils", "db_utils.py")
+        render_logger.info(f"📁 [AUTH] Carregando db_utils de: {db_utils_path}")
+        
         spec = importlib.util.spec_from_file_location("db_utils", db_utils_path)
         db_utils = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(db_utils)
         
-        return db_utils.autenticar_usuario(email, senha)
+        resultado = db_utils.autenticar_usuario(email, senha)
+        
+        if resultado:
+            render_logger.info(f"✅ [AUTH] Autenticação bem-sucedida para: {email}")
+        else:
+            render_logger.warning(f"❌ [AUTH] Falha na autenticação para: {email}")
+        
+        return resultado
     except Exception as e:
+        render_logger.error(f"❌ [AUTH] Erro ao importar db_utils: {e}")
         print(f"Erro ao importar db_utils: {e}")
         return None
 
@@ -88,10 +121,12 @@ def salvar_historico_chat_pickle():
 
 def login():
     """Tela de login com opção de cadastro"""
+    render_logger.info("🔐 [LOGIN] Página de login acessada")
     
     # Verifica se está no modo cadastro
     if st.session_state.get("modo_cadastro"):
         from views.cadastro_setup import mostrar_cadastro_setup
+        render_logger.info("📝 [LOGIN] Redirecionando para cadastro")
         mostrar_cadastro_setup()
         return
     
@@ -114,6 +149,7 @@ def login():
                 
                 if submitted:
                     if email and senha:
+                        render_logger.info(f"🔐 [LOGIN] Tentativa de login para: {email}")
                         resultado = autenticar_usuario(email, senha)
                         if resultado:
                             id_client, nome = resultado
@@ -121,11 +157,14 @@ def login():
                             st.session_state.email = email
                             st.session_state.name = nome
                             st.session_state.id_client = id_client
+                            render_logger.info(f"✅ [LOGIN] Login bem-sucedido para: {nome} (ID: {id_client})")
                             st.success(f"✅ Bem-vindo, {nome}!")
                             st.rerun()
                         else:
+                            render_logger.warning(f"❌ [LOGIN] Falha no login para: {email}")
                             st.error("❌ Email ou senha incorretos")
                     else:
+                        render_logger.warning("⚠️ [LOGIN] Campos obrigatórios não preenchidos")
                         st.error("❌ Preencha todos os campos")
         
         with col1:
@@ -159,6 +198,7 @@ def login():
             
             if st.button("📝 Criar Nova Conta", type="secondary", use_container_width=True):
                 # Redireciona para o fluxo de cadastro
+                render_logger.info("📝 [LOGIN] Redirecionamento para cadastro solicitado")
                 st.session_state["modo_cadastro"] = True
                 st.rerun()
         

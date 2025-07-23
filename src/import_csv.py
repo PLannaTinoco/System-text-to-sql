@@ -3,9 +3,31 @@ import pandas as pd
 import psycopg2
 import datetime
 import logging
+import sys
 from dotenv import load_dotenv
 
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_import')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-IMPORT - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
+
 load_dotenv()
+render_logger.info("🔧 [ENV] Variáveis de ambiente carregadas para import_csv")
+
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
@@ -27,16 +49,24 @@ PK_SUGGESTIONS = {
 TABLE_PREFIX = "cli02_"
 
 def conectar_banco():
-    return psycopg2.connect(
-        host=DB_HOST, port=DB_PORT,
-        dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
-    )
+    render_logger.info("🔌 [DB] Conectando ao banco PostgreSQL para import")
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST, port=DB_PORT,
+            dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
+        )
+        render_logger.info("✅ [DB] Conexão estabelecida com sucesso")
+        return conn
+    except Exception as e:
+        render_logger.error(f"❌ [DB] Erro ao conectar: {e}")
+        raise
 
 def criar_tabela_automatica(nome_tabela: str, df: pd.DataFrame):
     """
     Cria tabela no Postgres usando o nome e colunas de df.
     Mantém nomes originais de colunas para preservar JOINs.
     """
+    render_logger.info(f"🏗️ [TABLE] Criando tabela: {nome_tabela}")
     conn = conectar_banco()
     cursor = conn.cursor()
 
@@ -78,9 +108,11 @@ def criar_tabela_automatica(nome_tabela: str, df: pd.DataFrame):
     )
 
     logging.info("Executando DDL para %s:\n%s", nome_tabela, ddl)
+    render_logger.info(f"📝 [DDL] Executando DDL para tabela {nome_tabela}")
     cursor.execute(ddl)
     conn.commit()
     logging.info("Tabela '%s' criada com sucesso.", nome_tabela)
+    render_logger.info(f"✅ [TABLE] Tabela {nome_tabela} criada com {len(df.columns)} colunas")
     cursor.close()
     conn.close()
 

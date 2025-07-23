@@ -3,6 +3,26 @@ import sys
 import os
 import pandas as pd
 import tempfile
+import logging
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_config')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-CONFIG - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adiciona src ao path para importar funções
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
@@ -11,6 +31,8 @@ from utils.db_utils import conectar_db
 
 def obter_tabelas_usuario(client_id: int) -> list:
     """Obtém lista de tabelas do usuário"""
+    render_logger.info(f"🔍 [DB] Buscando tabelas para cliente {client_id}")
+    
     try:
         conn = conectar_db()
         cursor = conn.cursor()
@@ -26,9 +48,12 @@ def obter_tabelas_usuario(client_id: int) -> list:
         tabelas = [row[0] for row in cursor.fetchall()]
         cursor.close()
         conn.close()
+        
+        render_logger.info(f"✅ [DB] {len(tabelas)} tabelas encontradas para cliente {client_id}")
         return tabelas
         
     except Exception as e:
+        render_logger.error(f"❌ [DB] Erro ao obter tabelas para cliente {client_id}: {e}")
         st.error(f"Erro ao obter tabelas: {e}")
         return []
 

@@ -7,18 +7,51 @@ sem alterar o código original - soluciona problema dos input() interativos
 import sys
 import os
 import streamlit as st
+import logging
 from unittest.mock import patch
 from typing import Dict, Optional, Any
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_vanna')
+    if not logger.handlers:
+        # Handler para console (visível no Render)
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        
+        # Formato otimizado para Render
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adiciona o path do src para importar vanna_core
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, '..', '..', 'src')
+render_logger.info(f"🔧 [PATH] Diretório atual: {current_dir}")
+render_logger.info(f"🔧 [PATH] Src path calculado: {src_path}")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
+    render_logger.info(f"✅ [PATH] Src path adicionado ao sys.path")
 
 # Import do vanna_core original
-from vanna_core import setup_treinamento_cliente as setup_original
-from vanna_core import VannaDefault
+try:
+    from vanna_core import setup_treinamento_cliente as setup_original
+    from vanna_core import VannaDefault
+    render_logger.info("✅ [IMPORT] vanna_core importado com sucesso")
+except ImportError as e:
+    render_logger.error(f"❌ [IMPORT] Erro ao importar vanna_core: {e}")
+    raise
 
 def setup_treinamento_cliente_interface(id_client: int, configuracoes: dict) -> VannaDefault:
     """
@@ -43,6 +76,8 @@ def setup_treinamento_cliente_interface(id_client: int, configuracoes: dict) -> 
     
     print(f"🔧 [WRAPPER] Iniciando setup para cliente {id_client}")
     print(f"🔧 [WRAPPER] Configurações: {configuracoes}")
+    render_logger.info(f"🔧 [WRAPPER] Iniciando setup_treinamento_cliente_interface para cliente {id_client}")
+    render_logger.info(f"🔧 [WRAPPER] Configurações recebidas: {configuracoes}")
     
     # Mapeia configurações para respostas automáticas dos input()
     respostas_automaticas = []
@@ -98,15 +133,18 @@ def setup_treinamento_cliente_interface(id_client: int, configuracoes: dict) -> 
         
         # Executa a função original com input simulado
         print("🚀 [WRAPPER] Executando setup_treinamento_cliente() original...")
+        render_logger.info(f"🚀 [WRAPPER] Executando setup_original com {len(respostas_automaticas)} respostas automáticas")
         
         with patch('builtins.input', side_effect=mock_input):
             vn = setup_original(id_client)
         
         print("✅ [WRAPPER] Setup concluído com sucesso!")
+        render_logger.info("✅ [WRAPPER] Setup_treinamento_cliente_interface concluído com sucesso")
         return vn
         
     except Exception as e:
         print(f"❌ [WRAPPER] Erro durante setup: {e}")
+        render_logger.error(f"❌ [WRAPPER] Erro durante setup_treinamento_cliente_interface: {e}")
         raise
 
 def setup_treinamento_completo_automatico(id_client: int) -> dict:
@@ -127,6 +165,7 @@ def setup_treinamento_completo_automatico(id_client: int) -> dict:
     """
     
     print(f"🎯 [SETUP_COMPLETO] Iniciando para cliente {id_client}")
+    render_logger.info(f"🎯 [SETUP_COMPLETO] Iniciando setup_treinamento_completo_automatico para cliente {id_client}")
     
     try:
         configuracoes = {
@@ -137,11 +176,13 @@ def setup_treinamento_completo_automatico(id_client: int) -> dict:
         }
         
         print("📋 [SETUP_COMPLETO] Configurações: Todos os treinamentos ativados")
+        render_logger.info("📋 [SETUP_COMPLETO] Configurações: plano + KPIs + DDLs ativados")
         
         # Chama o wrapper
         vn = setup_treinamento_cliente_interface(id_client, configuracoes)
         
         print("🎉 [SETUP_COMPLETO] Treinamento completo concluído!")
+        render_logger.info("🎉 [SETUP_COMPLETO] Treinamento completo concluído com sucesso")
         
         return {
             "status": "success",
@@ -152,6 +193,7 @@ def setup_treinamento_completo_automatico(id_client: int) -> dict:
         
     except Exception as e:
         print(f"❌ [SETUP_COMPLETO] Erro: {e}")
+        render_logger.error(f"❌ [SETUP_COMPLETO] Erro no treinamento completo: {e}")
         return {
             "status": "error",
             "vn": None,
@@ -177,6 +219,7 @@ def setup_treinamento_rapido(id_client: int) -> dict:
     """
     
     print(f"⚡ [SETUP_RAPIDO] Iniciando para cliente {id_client}")
+    render_logger.info(f"⚡ [SETUP_RAPIDO] Iniciando setup_treinamento_rapido para cliente {id_client}")
     
     try:
         configuracoes = {
@@ -187,11 +230,13 @@ def setup_treinamento_rapido(id_client: int) -> dict:
         }
         
         print("📋 [SETUP_RAPIDO] Configurações: Apenas plano básico")
+        render_logger.info("📋 [SETUP_RAPIDO] Configurações: apenas plano básico (KPIs e DDLs desabilitados)")
         
         # Chama o wrapper
         vn = setup_treinamento_cliente_interface(id_client, configuracoes)
         
         print("⚡ [SETUP_RAPIDO] Treinamento rápido concluído!")
+        render_logger.info("⚡ [SETUP_RAPIDO] Treinamento rápido concluído com sucesso")
         
         return {
             "status": "success",
@@ -202,6 +247,7 @@ def setup_treinamento_rapido(id_client: int) -> dict:
         
     except Exception as e:
         print(f"❌ [SETUP_RAPIDO] Erro: {e}")
+        render_logger.error(f"❌ [SETUP_RAPIDO] Erro no treinamento rápido: {e}")
         return {
             "status": "error",
             "vn": None,
@@ -229,6 +275,7 @@ def setup_treinamento_personalizado(id_client: int, opcoes: dict) -> dict:
     
     print(f"🎨 [SETUP_PERSONALIZADO] Iniciando para cliente {id_client}")
     print(f"🎨 [SETUP_PERSONALIZADO] Opções: {opcoes}")
+    render_logger.info(f"🎨 [SETUP_PERSONALIZADO] Iniciando para cliente {id_client} com opções: {opcoes}")
     
     try:
         configuracoes = {
@@ -253,6 +300,7 @@ def setup_treinamento_personalizado(id_client: int, opcoes: dict) -> dict:
         detalhes = f"Treinamento personalizado: {', '.join(detalhes_opcoes)}"
         
         print(f"🎨 [SETUP_PERSONALIZADO] Concluído: {detalhes}")
+        render_logger.info(f"🎨 [SETUP_PERSONALIZADO] Concluído com sucesso: {detalhes}")
         
         return {
             "status": "success",
@@ -263,6 +311,7 @@ def setup_treinamento_personalizado(id_client: int, opcoes: dict) -> dict:
         
     except Exception as e:
         print(f"❌ [SETUP_PERSONALIZADO] Erro: {e}")
+        render_logger.error(f"❌ [SETUP_PERSONALIZADO] Erro no treinamento personalizado: {e}")
         return {
             "status": "error",
             "vn": None,
@@ -283,6 +332,7 @@ def inicializar_vanna_para_interface_otimizado(email: str, modo: str = "completo
     """
     
     print(f"🔄 [INIT_OTIMIZADO] Inicializando para {email} (modo: {modo})")
+    render_logger.info(f"🔄 [INIT_OTIMIZADO] Inicializando vanna para {email} (modo: {modo})")
     
     try:
         # Obtém ID do cliente via vanna_core
@@ -290,6 +340,7 @@ def inicializar_vanna_para_interface_otimizado(email: str, modo: str = "completo
         id_client = obter_id_client_por_email(email)
         
         print(f"👤 [INIT_OTIMIZADO] Cliente ID: {id_client}")
+        render_logger.info(f"👤 [INIT_OTIMIZADO] Cliente ID obtido: {id_client}")
         
         # Escolhe método de setup baseado no modo
         if modo == "completo":
@@ -307,6 +358,7 @@ def inicializar_vanna_para_interface_otimizado(email: str, modo: str = "completo
         
     except Exception as e:
         print(f"❌ [INIT_OTIMIZADO] Erro: {e}")
+        render_logger.error(f"❌ [INIT_OTIMIZADO] Erro na inicialização: {e}")
         return {
             "status": "error",
             "vn": None,
@@ -333,6 +385,8 @@ def executar_setup_com_progress(id_client: int, configuracoes: dict,
     if progress_callback:
         progress_callback(0.1, "Iniciando setup...")
     
+    render_logger.info(f"🚀 [PROGRESS_SETUP] Iniciando setup com progress para cliente {id_client}")
+    
     try:
         if progress_callback:
             progress_callback(0.3, "Configurando modelo...")
@@ -343,6 +397,8 @@ def executar_setup_com_progress(id_client: int, configuracoes: dict,
         if progress_callback:
             progress_callback(1.0, "Setup concluído!")
         
+        render_logger.info("✅ [PROGRESS_SETUP] Setup com progress concluído com sucesso")
+        
         return {
             "status": "success",
             "vn": vn,
@@ -352,6 +408,8 @@ def executar_setup_com_progress(id_client: int, configuracoes: dict,
     except Exception as e:
         if progress_callback:
             progress_callback(1.0, f"Erro: {str(e)}")
+        
+        render_logger.error(f"❌ [PROGRESS_SETUP] Erro no setup com progress: {e}")
         
         return {
             "status": "error",

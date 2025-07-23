@@ -4,20 +4,48 @@ import streamlit as st
 import os
 import sys
 import atexit
+import logging
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_app')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-APP - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 # Adiciona o diretório src/ ao sys.path para permitir importações
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.append(src_path)
+render_logger.info(f"🔧 [PATH] Src path adicionado: {src_path}")
 
 # Agora é seguro importar coisas de src/
-from vanna_core import inicializar_vanna_para_interface
-from auth.auth_utils import login, logout
-from utils.session_cleanup_controller import SessionCleanupController
+try:
+    from vanna_core import inicializar_vanna_para_interface
+    from auth.auth_utils import login, logout
+    from utils.session_cleanup_controller import SessionCleanupController
+    render_logger.info("✅ [IMPORT] Módulos principais importados com sucesso")
+except ImportError as e:
+    render_logger.error(f"❌ [IMPORT] Erro ao importar módulos principais: {e}")
+    raise
 
 # Instância global do controlador de sessão
 cleanup_controller = SessionCleanupController()
 
 def carregar_pagina():
     pagina = st.session_state.get("pagina", "Home")
+    render_logger.info(f"📄 [PAGE] Carregando página: {pagina}")
 
     if pagina == "Home":
         from views.home import mostrar_home
@@ -36,6 +64,7 @@ def carregar_pagina():
 
 def main():
     """Aplicação principal com sistema de cleanup otimizado"""
+    render_logger.info("🚀 [MAIN] Iniciando aplicação principal")
     
     # SISTEMA DE CLEANUP OTIMIZADO - UMA ÚNICA VEZ POR SESSÃO
     if "cleanup_registrado" not in st.session_state:
@@ -47,6 +76,7 @@ def main():
         
         st.session_state.cleanup_registrado = True
         print("🔧 [INIT] Sistema de cleanup otimizado ativado")
+        render_logger.info("🔧 [CLEANUP] Sistema de cleanup otimizado ativado")
     
     # Detecta mudança de usuário e executa cleanup se necessário
     current_user = st.session_state.get("id_client")

@@ -4,7 +4,28 @@ import os
 import json
 import pickle
 import streamlit as st
+import logging
+import sys
 from datetime import datetime
+
+# 🔧 [LOGGING] Configuração de logging para Render
+def setup_render_logging():
+    """Configura logging para ser visível no Render"""
+    logger = logging.getLogger('soliris_historico')
+    if not logger.handlers:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - SOLIRIS-HIST - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+# Inicializar logger
+render_logger = setup_render_logging()
 
 def get_abs_path(*path_parts):
     """Vai para interface/auth/hist/usuario_XX/ baseado no usuário logado"""
@@ -18,16 +39,24 @@ def get_abs_path(*path_parts):
     
     # Cria diretório se não existir
     os.makedirs(hist_dir, exist_ok=True)
+    render_logger.info(f"📁 [HIST] Diretório de histórico: {hist_dir}")
     
-    return os.path.join(hist_dir, *path_parts)
+    full_path = os.path.join(hist_dir, *path_parts)
+    return full_path
 
 def carregar_qualquer_historico(arquivo_path):
     """Carrega qualquer tipo de arquivo de histórico (pkl ou json)"""
+    render_logger.info(f"📁 [FILE] Carregando histórico: {arquivo_path}")
+    
     try:
         if arquivo_path.endswith('.pkl'):
+            render_logger.info("📄 [FILE] Formato pickle detectado")
             with open(arquivo_path, "rb") as f:
-                return pickle.load(f)
+                historico = pickle.load(f)
+            render_logger.info(f"✅ [FILE] Histórico pickle carregado com {len(historico) if isinstance(historico, list) else 'N/A'} entradas")
+            return historico
         else:  # json
+            render_logger.info("📄 [FILE] Formato JSON detectado")
             with open(arquivo_path, "r", encoding="utf-8") as f:
                 historico_raw = json.load(f)
             
@@ -37,6 +66,7 @@ def carregar_qualquer_historico(arquivo_path):
                 
                 # Se tem "resultado" em vez de "resposta", é formato backend
                 if "resultado" in primeira_entrada and "resposta" not in primeira_entrada:
+                    render_logger.info("🔄 [CONVERT] Convertendo formato backend para Streamlit")
                     historico_convertido = []
                     for entry in historico_raw:
                         chat_entry = {
