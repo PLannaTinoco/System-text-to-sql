@@ -1,36 +1,36 @@
 [
   {
-    "id": "14014820-ddl",
-    "training_data_type": "ddl",
-    "question": null,
-    "content": "CREATE TABLE cli01_hubspot_contatos_teste (\n    id_hubspot TEXT,\n    nome TEXT,\n    email TEXT,\n    telefone TEXT,\n    empresa TEXT,\n    importado_em TEXT\n);\n"
-  },
-  {
-    "id": "3426331-doc",
-    "training_data_type": "documentation",
-    "question": null,
-    "content": "The following columns are in the cli01_kpis_definicoes table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------------|:--------------|:------------|\n|  6 | kpisempresas    | public         | cli01_kpis_definicoes | id            | integer     |\n|  7 | kpisempresas    | public         | cli01_kpis_definicoes | id_client     | integer     |\n|  8 | kpisempresas    | public         | cli01_kpis_definicoes | nome_kpi      | text        |\n|  9 | kpisempresas    | public         | cli01_kpis_definicoes | descricao     | text        |\n| 10 | kpisempresas    | public         | cli01_kpis_definicoes | formula_sql   | text        |"
-  },
-  {
-    "id": "14014814-ddl",
+    "id": "15566796-ddl",
     "training_data_type": "ddl",
     "question": null,
     "content": "CREATE TABLE cli01_kpis_definicoes (\n    id INTEGER PRIMARY KEY,\n    id_client INTEGER,\n    nome_kpi TEXT,\n    descricao TEXT,\n    formula_sql TEXT\n);\n"
   },
   {
-    "id": "3426330-doc",
-    "training_data_type": "documentation",
-    "question": null,
-    "content": "The following columns are in the cli01_marketing table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name      | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------|:--------------|:------------|\n| 11 | kpisempresas    | public         | cli01_marketing | id            | integer     |\n| 12 | kpisempresas    | public         | cli01_marketing | c_date        | date        |\n| 13 | kpisempresas    | public         | cli01_marketing | campaign_name | text        |\n| 14 | kpisempresas    | public         | cli01_marketing | category      | text        |\n| 15 | kpisempresas    | public         | cli01_marketing | campaign_id   | integer     |\n| 16 | kpisempresas    | public         | cli01_marketing | impressions   | integer     |\n| 17 | kpisempresas    | public         | cli01_marketing | mark_spent    | numeric     |\n| 18 | kpisempresas    | public         | cli01_marketing | clicks        | integer     |\n| 19 | kpisempresas    | public         | cli01_marketing | leads         | integer     |\n| 20 | kpisempresas    | public         | cli01_marketing | orders        | integer     |\n| 21 | kpisempresas    | public         | cli01_marketing | revenue       | numeric     |"
-  },
-  {
-    "id": "14014804-ddl",
+    "id": "15566799-ddl",
     "training_data_type": "ddl",
     "question": null,
     "content": "CREATE TABLE cli01_marketing (\n    id SERIAL PRIMARY KEY,\n    c_date DATE,\n    campaign_name TEXT,\n    category TEXT,\n    campaign_id INTEGER,\n    impressions INTEGER,\n    mark_spent NUMERIC,\n    clicks INTEGER,\n    leads INTEGER,\n    orders INTEGER,\n    revenue NUMERIC\n);\n"
   },
   {
-    "id": "3426332-doc",
+    "id": "15566793-ddl",
+    "training_data_type": "ddl",
+    "question": null,
+    "content": "CREATE TABLE cli01_hubspot_contatos_teste (\n    id_hubspot TEXT,\n    nome TEXT,\n    email TEXT,\n    telefone TEXT,\n    empresa TEXT,\n    importado_em TEXT\n);\n"
+  },
+  {
+    "id": "3437486-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli01_kpis_definicoes table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------------|:--------------|:------------|\n|  6 | kpisempresas    | public         | cli01_kpis_definicoes | id            | integer     |\n|  7 | kpisempresas    | public         | cli01_kpis_definicoes | id_client     | integer     |\n|  8 | kpisempresas    | public         | cli01_kpis_definicoes | nome_kpi      | text        |\n|  9 | kpisempresas    | public         | cli01_kpis_definicoes | descricao     | text        |\n| 10 | kpisempresas    | public         | cli01_kpis_definicoes | formula_sql   | text        |"
+  },
+  {
+    "id": "3437487-doc",
+    "training_data_type": "documentation",
+    "question": null,
+    "content": "The following columns are in the cli01_marketing table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name      | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------|:--------------|:------------|\n| 11 | kpisempresas    | public         | cli01_marketing | id            | integer     |\n| 12 | kpisempresas    | public         | cli01_marketing | c_date        | date        |\n| 13 | kpisempresas    | public         | cli01_marketing | campaign_name | text        |\n| 14 | kpisempresas    | public         | cli01_marketing | category      | text        |\n| 15 | kpisempresas    | public         | cli01_marketing | campaign_id   | integer     |\n| 16 | kpisempresas    | public         | cli01_marketing | impressions   | integer     |\n| 17 | kpisempresas    | public         | cli01_marketing | mark_spent    | numeric     |\n| 18 | kpisempresas    | public         | cli01_marketing | clicks        | integer     |\n| 19 | kpisempresas    | public         | cli01_marketing | leads         | integer     |\n| 20 | kpisempresas    | public         | cli01_marketing | orders        | integer     |\n| 21 | kpisempresas    | public         | cli01_marketing | revenue       | numeric     |"
+  },
+  {
+    "id": "3437488-doc",
     "training_data_type": "documentation",
     "question": null,
     "content": "The following columns are in the cli01_hubspot_contatos_teste table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name                   | column_name   | data_type   |\n|---:|:----------------|:---------------|:-----------------------------|:--------------|:------------|\n|  0 | kpisempresas    | public         | cli01_hubspot_contatos_teste | id_hubspot    | text        |\n|  1 | kpisempresas    | public         | cli01_hubspot_contatos_teste | nome          | text        |\n|  2 | kpisempresas    | public         | cli01_hubspot_contatos_teste | email         | text        |\n|  3 | kpisempresas    | public         | cli01_hubspot_contatos_teste | telefone      | text        |\n|  4 | kpisempresas    | public         | cli01_hubspot_contatos_teste | empresa       | text        |\n|  5 | kpisempresas    | public         | cli01_hubspot_contatos_teste | importado_em  | text        |"
