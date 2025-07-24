@@ -1,0 +1,16 @@
+{
+  "_plan": [
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli10_kpis_definicoes",
+      "item_value": "The following columns are in the cli10_kpis_definicoes table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name            | column_name   | data_type                   |\n|---:|:----------------|:---------------|:----------------------|:--------------|:----------------------------|\n|  0 | kpisempresas    | public         | cli10_kpis_definicoes | id            | integer                     |\n|  6 | kpisempresas    | public         | cli10_kpis_definicoes | data_criacao  | timestamp without time zone |\n| 11 | kpisempresas    | public         | cli10_kpis_definicoes | nome_kpi      | character varying           |\n| 12 | kpisempresas    | public         | cli10_kpis_definicoes | descricao     | text                        |\n| 13 | kpisempresas    | public         | cli10_kpis_definicoes | formula_sql   | text                        |"
+    },
+    {
+      "item_type": "is",
+      "item_group": "kpisempresas.public",
+      "item_name": "cli10_marketing",
+      "item_value": "The following columns are in the cli10_marketing table in the kpisempresas database:\n\n|    | table_catalog   | table_schema   | table_name      | column_name   | data_type   |\n|---:|:----------------|:---------------|:----------------|:--------------|:------------|\n|  1 | kpisempresas    | public         | cli10_marketing | mark_spent    | numeric     |\n|  2 | kpisempresas    | public         | cli10_marketing | clicks        | integer     |\n|  3 | kpisempresas    | public         | cli10_marketing | leads         | integer     |\n|  4 | kpisempresas    | public         | cli10_marketing | orders        | integer     |\n|  5 | kpisempresas    | public         | cli10_marketing | revenue       | numeric     |\n|  7 | kpisempresas    | public         | cli10_marketing | id            | integer     |\n|  8 | kpisempresas    | public         | cli10_marketing | c_date        | date        |\n|  9 | kpisempresas    | public         | cli10_marketing | campaign_id   | integer     |\n| 10 | kpisempresas    | public         | cli10_marketing | impressions   | integer     |\n| 14 | kpisempresas    | public         | cli10_marketing | category      | text        |\n| 15 | kpisempresas    | public         | cli10_marketing | campaign_name | text        |"
+    }
+  ]
+}

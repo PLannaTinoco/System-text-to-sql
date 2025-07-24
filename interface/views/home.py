@@ -32,15 +32,23 @@ render_logger.info(f"🔧 [PATH] Src path adicionado: {src_path}")
 
 try:
     from vanna_core import usar_vn_ask, executar_sql_e_gerar_grafico, gerar_grafico_personalizado
+    from database_manager import db_manager
+    from dotenv import load_dotenv
+    
+    # Carregar .env para garantir acesso ao DatabaseManager
+    load_dotenv()
+    
     print("✅ [DEBUG] Funções importadas com sucesso do vanna_core!")
-    render_logger.info("✅ [IMPORT] Funções do vanna_core importadas com sucesso")
+    print("✅ [DEBUG] DatabaseManager importado com sucesso!")
+    render_logger.info("✅ [IMPORT] Módulos principais importados com sucesso")
     print("   - usar_vn_ask: ", usar_vn_ask)
     print("   - executar_sql_e_gerar_grafico: ", executar_sql_e_gerar_grafico)
     print("   - gerar_grafico_personalizado: ", gerar_grafico_personalizado)
+    print("   - db_manager: ", db_manager)
 except ImportError as e:
-    print(f"❌ [DEBUG] Erro ao importar funções do vanna_core: {e}")
-    render_logger.error(f"❌ [IMPORT] Erro ao importar funções do vanna_core: {e}")
-    st.error(f"Erro ao importar funções do vanna_core: {e}")
+    print(f"❌ [DEBUG] Erro ao importar módulos: {e}")
+    render_logger.error(f"❌ [IMPORT] Erro ao importar módulos: {e}")
+    st.error(f"Erro ao importar módulos: {e}")
     st.stop()
 
 def mostrar_home():
@@ -397,3 +405,95 @@ def mostrar_home():
                 print(f"   ⚠️ Gráficos não exibidos - dados_validos = {dados_validos}")
 
             st.divider()
+
+    # Seção de teste da persistência PostgreSQL
+    st.markdown("---")
+    st.subheader("🗄️ Persistência de Dados (PostgreSQL)")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Teste de Salvamento**")
+        if st.button("💾 Testar Persistência", key="test_persistence"):
+            try:
+                client_id = st.session_state.get("id_client")
+                mock_data = [{
+                    "id": f"streamlit-test-{client_id}-01",
+                    "training_data_type": "sql",
+                    "content": "SELECT COUNT(*) FROM clientes;",
+                    "question": "Quantos clientes temos no total?"
+                }]
+                
+                print(f"[DEBUG] Testando persistência para cliente {client_id}")
+                success = db_manager.save_training_data(client_id, mock_data)
+                
+                if success:
+                    st.success("✅ Dados de treino salvos no PostgreSQL!")
+                    print(f"[SUCCESS] Dados salvos com sucesso no banco")
+                else:
+                    st.error("❌ Erro ao salvar no banco PostgreSQL.")
+                    print(f"[ERROR] Falha ao salvar dados no banco")
+                    
+            except Exception as e:
+                st.error(f"❌ Exceção: {str(e)}")
+                print(f"[EXCEPTION] Erro na persistência: {e}")
+    
+    with col2:
+        st.write("**Visualização de Dados**")
+        if st.button("📋 Carregar Dados do Banco", key="load_persistence"):
+            try:
+                client_id = st.session_state.get("id_client")
+                print(f"[DEBUG] Carregando dados do cliente {client_id}")
+                
+                dados = db_manager.load_training_data(client_id)
+                
+                if dados:
+                    st.success(f"✅ {len(dados)} registros carregados!")
+                    print(f"[SUCCESS] {len(dados)} registros carregados do banco")
+                    
+                    # Exibir amostra dos dados
+                    with st.expander("📊 Dados de Treinamento", expanded=True):
+                        for i, item in enumerate(dados[:5]):  # Mostrar apenas os 5 primeiros
+                            with st.container():
+                                st.write(f"**Registro {i+1}:**")
+                                col_id, col_type = st.columns(2)
+                                with col_id:
+                                    st.text(f"ID: {item.get('id', 'N/A')}")
+                                with col_type:
+                                    st.text(f"Tipo: {item.get('training_data_type', 'N/A')}")
+                                
+                                if item.get('question'):
+                                    st.text(f"Pergunta: {item['question']}")
+                                st.code(item.get('content', 'N/A'), language='sql')
+                                st.divider()
+                        
+                        if len(dados) > 5:
+                            st.info(f"... e mais {len(dados) - 5} registros")
+                else:
+                    st.warning("⚠️ Nenhum dado encontrado no banco para este cliente")
+                    print(f"[WARNING] Nenhum dado encontrado para cliente {client_id}")
+                    
+            except Exception as e:
+                st.error(f"❌ Exceção: {str(e)}")
+                print(f"[EXCEPTION] Erro ao carregar dados: {e}")
+    
+    # Estatísticas do banco
+    st.write("**Estatísticas do Banco**")
+    try:
+        client_id = st.session_state.get("id_client")
+        ids_disponiveis = db_manager.get_training_data_ids(client_id)
+        
+        col_stats1, col_stats2, col_stats3 = st.columns(3)
+        with col_stats1:
+            st.metric("Total de Registros", len(ids_disponiveis))
+        with col_stats2:
+            st.metric("Cliente ID", client_id)
+        with col_stats3:
+            connection_status = "🟢 Conectado" if db_manager.test_connection() else "🔴 Desconectado"
+            st.metric("Status Conexão", connection_status)
+            
+    except Exception as e:
+        st.error(f"❌ Erro ao obter estatísticas: {e}")
+        print(f"[EXCEPTION] Erro nas estatísticas: {e}")
+
+    print("✅ [DEBUG] Seção de persistência renderizada")

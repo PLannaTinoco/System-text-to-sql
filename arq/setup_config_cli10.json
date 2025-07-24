@@ -1,0 +1,15 @@
+{
+  "dados_importados": {
+    "csvs": [
+      "marketing"
+    ]
+  },
+  "etapa_atual": 3,
+  "treinar_plan": true,
+  "treinar_kpis": true,
+  "treinar_ddl": true,
+  "treinar_docs": false,
+  "documentacao": "",
+  "treinamento_iniciado": true,
+  "treinamento_inicio": "2025-07-23T21:35:39.290802"
+}

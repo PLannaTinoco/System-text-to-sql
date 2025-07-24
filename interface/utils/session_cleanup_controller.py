@@ -66,37 +66,92 @@ class SessionCleanupController:
     
     def _smart_cleanup(self, user_id):
         """
-        Limpeza inteligente que usa a função correta do vanna_core
-        Esta função JÁ FAZ o salvamento antes da limpeza
+        Limpeza inteligente que usa DatabaseManager para persistência PostgreSQL
         """
         try:
             if not hasattr(st.session_state, 'vanna') or not st.session_state.vanna:
                 print("⚠️ [SMART_CLEAN] Vanna não disponível")
                 return True
                 
-            # Configura path para vanna_core
+            # Configura path para vanna_core e database_manager
             import sys
             import os
             src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
             if src_path not in sys.path:
                 sys.path.append(src_path)
                 
-            # Usa a função correta que JÁ FAZ salvamento + limpeza
-            from vanna_core import limpar_data_training
-            
+            try:
+                from database_manager import db_manager
+                print("✅ [SMART_CLEAN] DatabaseManager importado com sucesso")
+                use_db_manager = True
+            except ImportError as e:
+                print(f"⚠️ [SMART_CLEAN] DatabaseManager não disponível: {e}")
+                use_db_manager = False
+                
             vanna = st.session_state.vanna
             
             print(f"🧠 [SMART_CLEAN] Executando limpeza inteligente para usuário {user_id}")
-            print("📋 [SMART_CLEAN] Esta função automaticamente:")
-            print("   1. Salva dados filtrados do usuário")
-            print("   2. Remove apenas dados adicionados na sessão")
-            print("   3. Preserva backup original")
             
-            # A função limpar_data_training já faz tudo automaticamente
-            limpar_data_training(vanna, user_id)
-            
-            print(f"✅ [SMART_CLEAN] Limpeza inteligente concluída para usuário {user_id}")
-            return True
+            if use_db_manager:
+                print("�️ [SMART_CLEAN] Usando DatabaseManager (PostgreSQL):")
+                print("   1. Obtém dados atuais do modelo Vanna")
+                print("   2. Filtra apenas dados novos da sessão")
+                print("   3. Salva no PostgreSQL")
+                print("   4. Remove dados temporários do modelo")
+                
+                try:
+                    # 1. Obter dados atuais do modelo Vanna
+                    training_data = vanna.get_training_data()
+                    if training_data is not None and not training_data.empty:
+                        
+                        # 2. Converter para formato compatível com DatabaseManager
+                        training_data_dict = training_data.to_dict(orient='records')
+                        
+                        # 3. Usar helper para garantir formato correto
+                        formatted_data = db_manager.format_training_data_batch(training_data_dict, user_id)
+                        
+                        print(f"📋 [SMART_CLEAN] Formatados {len(formatted_data)} registros para salvamento")
+                        
+                        # 3. Salvar no PostgreSQL usando DatabaseManager
+                        success = db_manager.save_training_data(user_id, formatted_data)
+                        
+                        if success:
+                            print(f"✅ [SMART_CLEAN] {len(formatted_data)} registros salvos no PostgreSQL")
+                            print("✔ Dados salvos no PostgreSQL")
+                        else:
+                            print("⚠️ [SMART_CLEAN] Falha ao salvar no PostgreSQL")
+                    else:
+                        print("ℹ️ [SMART_CLEAN] Nenhum dado novo para salvar")
+                    
+                    # 4. Limpeza inteligente do modelo (preserva dados do backup)
+                    try:
+                        backup_ids = db_manager.get_training_data_ids(None)  # Dados globais
+                        current_data = vanna.get_training_data()
+                        
+                        if current_data is not None and not current_data.empty:
+                            current_ids = current_data["id"].tolist()
+                            
+                            # Remove apenas IDs que não estão no backup
+                            removed_count = 0
+                            for data_id in current_ids:
+                                if data_id not in backup_ids:
+                                    try:
+                                        vanna.remove_training_data(id=data_id)
+                                        removed_count += 1
+                                    except Exception as e:
+                                        print(f"⚠️ [SMART_CLEAN] Erro ao remover ID {data_id}: {e}")
+                            
+                            print(f"🧹 [SMART_CLEAN] {removed_count} registros temporários removidos do modelo")
+                        
+                    except Exception as cleanup_error:
+                        print(f"⚠️ [SMART_CLEAN] Erro na limpeza do modelo: {cleanup_error}")
+                    
+                    print(f"✅ [SMART_CLEAN] Limpeza PostgreSQL concluída para usuário {user_id}")
+                    return True
+                    
+                except Exception as db_error:
+                    print(f"⚠️ [SMART_CLEAN] Erro no DatabaseManager: {db_error}")
+                    return False
             
         except Exception as e:
             print(f"❌ [SMART_CLEAN] Erro na limpeza inteligente: {e}")

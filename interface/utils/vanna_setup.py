@@ -7,11 +7,24 @@ Remove inputs interativos e permite configuração via parâmetros
 import os
 import json
 import logging
+import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
 # Carrega variáveis de ambiente
 load_dotenv()
+
+# Adicionar src ao path para importar database_manager
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
+try:
+    from database_manager import db_manager
+    print("✅ [VANNA_SETUP] DatabaseManager importado com sucesso")
+except ImportError as e:
+    print(f"❌ [VANNA_SETUP] Erro ao importar DatabaseManager: {e}")
+    db_manager = None
 
 def verificar_tabela_existe(nome_tabela: str) -> bool:
     """Verifica se uma tabela existe no banco de dados"""
@@ -91,6 +104,7 @@ def setup_treinamento_cliente_interface(id_client: int, config: dict):
     """
     Versão adaptada para Streamlit - sem inputs interativos
     Recebe configurações via dict config em vez de perguntar ao usuário
+    Agora usa DatabaseManager para carregar training_data do PostgreSQL
     """
     from vanna.remote import VannaDefault
     from vanna_core import (
@@ -99,6 +113,8 @@ def setup_treinamento_cliente_interface(id_client: int, config: dict):
         treinar_com_ddl,
         load_training_data
     )
+    
+    print(f"🚀 [VANNA_SETUP] Iniciando setup para cliente {id_client}")
     
     # Inicializa Vanna
     vn = VannaDefault(model="jarves", api_key=os.getenv("API_KEY"))
@@ -110,12 +126,52 @@ def setup_treinamento_cliente_interface(id_client: int, config: dict):
         password=os.getenv("DB_PASSWORD")
     )
 
-    # 1) tenta carregar plano salvo
+    # 1) Tenta carregar dados do PostgreSQL usando DatabaseManager
     try:
-        if load_training_data(vn, id_client):
-            logging.info("Dados de treinamento carregados para cliente %02d.", id_client)
-            return vn
+        print(f"📚 [VANNA_SETUP] Tentando carregar training_data do PostgreSQL para cliente {id_client}")
+        
+        if db_manager:
+            # Usa novo método com DatabaseManager
+            training_data = db_manager.load_training_data(id_client)
+            
+            if training_data:
+                print(f"✅ [VANNA_SETUP] {len(training_data)} registros carregados do PostgreSQL")
+                
+                # Aplicar training_data no modelo Vanna
+                trained_items = 0
+                for item in training_data:
+                    try:
+                        tipo = item.get("training_data_type")
+                        conteudo = item.get("content")
+                        pergunta = item.get("question")
+
+                        if not conteudo:
+                            continue
+
+                        if tipo == "ddl":
+                            vn.train(ddl=conteudo)
+                            trained_items += 1
+                        elif tipo == "sql":
+                            if pergunta:
+                                vn.train(sql=conteudo, question=pergunta)
+                                trained_items += 1
+                        elif tipo == "documentation":
+                            vn.train(documentation=conteudo)
+                            trained_items += 1
+                            
+                    except Exception as item_error:
+                        print(f"⚠️ [VANNA_SETUP] Erro ao treinar item {item.get('id')}: {item_error}")
+                
+                print(f"✅ [VANNA_SETUP] {trained_items} itens aplicados ao modelo Vanna")
+                print("✔ Dados carregados do PostgreSQL")
+                return vn
+            else:
+                print(f"ℹ️ [VANNA_SETUP] Nenhum training_data encontrado no PostgreSQL para cliente {id_client}")
+        else:
+            print("⚠️ [VANNA_SETUP] DatabaseManager não disponível")
+            
     except Exception as e:
+        print(f"⚠️ [VANNA_SETUP] Erro ao carregar training data: {e}")
         logging.warning("Erro ao carregar training data: %s", e)
 
     # Verifica se já existe um arquivo de plan
@@ -422,4 +478,29 @@ def criar_estrutura_basica_cliente(id_client: int) -> bool:
         
     except Exception as e:
         logging.error(f"Erro ao criar estrutura básica para cliente {id_client}: {e}")
+        return False
+
+def has_training_data(client_id: int) -> bool:
+    """
+    Verifica se há dados de treinamento salvos para um cliente.
+    
+    Args:
+        client_id: ID do cliente
+        
+    Returns:
+        bool: True se há dados salvos, False caso contrário
+    """
+    try:
+        if not db_manager:
+            print("⚠️ [VANNA_SETUP] DatabaseManager não disponível")
+            return False
+            
+        # Usa DatabaseManager para verificar PostgreSQL
+        ids = db_manager.get_training_data_ids(client_id)
+        count = len(ids) if ids else 0
+        print(f"📊 [VANNA_SETUP] Cliente {client_id} tem {count} registros no PostgreSQL")
+        return count > 0
+            
+    except Exception as e:
+        print(f"⚠️ [VANNA_SETUP] Erro ao verificar training data: {e}")
         return False

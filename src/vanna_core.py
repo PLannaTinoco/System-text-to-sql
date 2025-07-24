@@ -24,6 +24,9 @@ from kpis_Setup import (
     fetch_kpis
 )
 
+# 🔧 [MIGRATION] Import do DatabaseManager para persistência PostgreSQL
+from database_manager import db_manager
+
 # 🔧 [LOGGING] Configuração de logging para Render
 def setup_render_logging():
     """Configura logging para ser visível no Render"""
@@ -75,11 +78,8 @@ def get_abs_path(*path_parts) -> str:
     base_dir = os.path.dirname(os.path.abspath(__file__))  # src/
     return os.path.join(base_dir, *path_parts)
 
-# Exemplo de uso para diretórios e arquivos
-TRAINING_DIR = get_abs_path("vanna_core", "training_data")
-TRAINING_FILE_TEMPLATE = get_abs_path("vanna_core", "training_data", "training_cliente_{:02d}.json")
-BACKUP_PATH = get_abs_path("arq", "backup.json")
-DADOS_TREINADOS_PATH = get_abs_path("arq", "dados_treinados.json")
+# 🔧 [NEW] Configuração para PostgreSQL - DatabaseManager importado diretamente
+# Constantes antigas de JSON removidas após migração para PostgreSQL
 
 def get_training_data_ids(vn: VannaDefault) -> list[int]:
     """
@@ -98,73 +98,160 @@ def get_training_data_ids(vn: VannaDefault) -> list[int]:
 
 
 def salvar_training_filtrado(vn, client_id):
-    training_path = get_abs_path("vanna_core", "training_data", f"training_cliente_{client_id:02d}.json")
-    backup_path = get_abs_path("arq", "dados_treinados.json")
+    """
+    🔄 [MIGRATION] Refatorada para usar PostgreSQL
+    Salva training_data filtrado (novos dados da sessão) no banco
+    """
+    render_logger.info(f"💾 [DB] Salvando training_data filtrado para cliente {client_id}")
     
-    render_logger.info(f"📁 [FILE] Acessando arquivo backup: {backup_path}")
+    try:
+        # 🔧 [NEW] Carrega dados de backup do PostgreSQL (dados globais)
+        backup_data = db_manager.load_training_data(client_id=None)  # client_id=None = dados globais
+        ids_backup = {item["id"] for item in backup_data if isinstance(item, dict) and "id" in item}
+        render_logger.info(f"📋 [DB] {len(ids_backup)} IDs no backup PostgreSQL")
 
-    with open(backup_path, "r", encoding="utf-8") as f:
-        backup = json.load(f)
-    ids_backup = {item["id"] for item in backup if isinstance(item, dict) and "id" in item}
+        # Obtém dados atuais do modelo Vanna
+        training_data = vn.get_training_data()
+        if training_data is None or training_data.empty:
+            render_logger.info("ℹ️ [DB] Nenhum training_data no modelo para salvar")
+            return
+            
+        # Filtra apenas dados novos (não estão no backup)
+        filtrados_df = training_data[~training_data["id"].isin(ids_backup)]
+        filtrados = filtrados_df.to_dict(orient="records")
+        
+        if not filtrados:
+            render_logger.info("ℹ️ [DB] Nenhum dado novo para salvar (todos já estão no backup)")
+            return
 
-    training_data = vn.get_training_data()
-    # Supondo que training_data é um DataFrame
-    filtrados_df = training_data[~training_data["id"].isin(ids_backup)]
-    filtrados = filtrados_df.to_dict(orient="records")
-
-    render_logger.info(f"📝 [FILE] Gerando arquivo de treinamento: {training_path}")
-    with open(training_path, "w", encoding="utf-8") as f:
-        json.dump(filtrados, f, ensure_ascii=False, indent=2)
-    print(f"Salvo {len(filtrados)} itens em {training_path}")
-    render_logger.info(f"✅ [FILE] Arquivo de treinamento salvo com {len(filtrados)} itens")
+        # 🔧 [NEW] Salva no PostgreSQL
+        success = db_manager.save_training_data(client_id, filtrados)
+        
+        if success:
+            render_logger.info(f"✅ [DB] Training data filtrado salvo - Cliente: {client_id}, Novos itens: {len(filtrados)}")
+        else:
+            render_logger.error(f"❌ [DB] Falha ao salvar training data filtrado")
+            
+        # 📁 [OLD] Código original comentado - manter por segurança
+        # training_path = get_abs_path("vanna_core", "training_data", f"training_cliente_{client_id:02d}.json")
+        # backup_path = get_abs_path("arq", "dados_treinados.json")
+        # 
+        # render_logger.info(f"📁 [FILE] Acessando arquivo backup: {backup_path}")
+        # 
+        # with open(backup_path, "r", encoding="utf-8") as f:
+        #     backup = json.load(f)
+        # ids_backup = {item["id"] for item in backup if isinstance(item, dict) and "id" in item}
+        # 
+        # training_data = vn.get_training_data()
+        # # Supondo que training_data é um DataFrame
+        # filtrados_df = training_data[~training_data["id"].isin(ids_backup)]
+        # filtrados = filtrados_df.to_dict(orient="records")
+        # 
+        # render_logger.info(f"📝 [FILE] Gerando arquivo de treinamento: {training_path}")
+        # with open(training_path, "w", encoding="utf-8") as f:
+        #     json.dump(filtrados, f, ensure_ascii=False, indent=2)
+        # print(f"Salvo {len(filtrados)} itens em {training_path}")
+        # render_logger.info(f"✅ [FILE] Arquivo de treinamento salvo com {len(filtrados)} itens")
+        
+    except Exception as e:
+        render_logger.error(f"❌ [DB] Erro ao salvar training_data filtrado: {e}")
+        raise
 
 def limpar_data_training_backup_only(vn):
-    """Remove apenas dados que não estão no backup"""
-    backup_path = get_abs_path("arq", "dados_treinados.json")
-    render_logger.info(f"📁 [FILE] Acessando backup para limpeza: {backup_path}")
-    with open(backup_path, "r", encoding="utf-8") as f:
-        dados = json.load(f)
-    ids_backup = {item["id"] for item in dados if isinstance(item, dict) and "id" in item}
+    """
+    🔄 [MIGRATION] Refatorada para usar PostgreSQL
+    Remove apenas dados que não estão no backup
+    """
+    render_logger.info("🧹 [DB] Iniciando limpeza - removendo apenas dados não salvos no backup")
+    
+    try:
+        # 🔧 [NEW] Carrega IDs do backup PostgreSQL (dados globais)
+        ids_backup = db_manager.get_training_data_ids(client_id=None)  # client_id=None = dados globais
+        render_logger.info(f"📋 [DB] {len(ids_backup)} IDs no backup PostgreSQL")
 
-    training_data = vn.get_training_data()
-    ids_atual = training_data["id"].tolist()
+        # Obtém dados atuais do modelo Vanna
+        training_data = vn.get_training_data()
+        if training_data is None or training_data.empty:
+            render_logger.info("ℹ️ [DB] Nenhum training_data no modelo para limpar")
+            return
+            
+        ids_atual = training_data["id"].tolist()
+        render_logger.info(f"📋 [DB] {len(ids_atual)} IDs no modelo atual")
 
-    for id in ids_atual:
-        if id not in ids_backup:
-            try:
-                vn.remove_training_data(id=id)
-                print(f"Removido id {id} do modelo (não está no backup)")
-                render_logger.info(f"🗑️ [CLEANUP] Removido ID {id} do modelo")
-            except Exception as e:
-                print(f"Erro ao remover id {id}: {e}")
-                render_logger.error(f"❌ [CLEANUP] Erro ao remover ID {id}: {e}")
+        # Remove IDs que não estão no backup
+        removidos = 0
+        for data_id in ids_atual:
+            if data_id not in ids_backup:
+                try:
+                    vn.remove_training_data(id=data_id)
+                    removidos += 1
+                    render_logger.info(f"🗑️ [CLEANUP] Removido ID {data_id} do modelo (não estava no backup)")
+                except Exception as e:
+                    render_logger.error(f"❌ [CLEANUP] Erro ao remover ID {data_id}: {e}")
+        
+        if removidos > 0:
+            render_logger.info(f"✅ [DB] Limpeza concluída - {removidos} itens removidos do modelo")
+        else:
+            render_logger.info("ℹ️ [DB] Nenhum item para remover (todos estão no backup)")
+        
+        # 📁 [OLD] Código original comentado - manter por segurança
+        # backup_path = get_abs_path("arq", "dados_treinados.json")
+        # render_logger.info(f"📁 [FILE] Acessando backup para limpeza: {backup_path}")
+        # with open(backup_path, "r", encoding="utf-8") as f:
+        #     dados = json.load(f)
+        # ids_backup = {item["id"] for item in dados if isinstance(item, dict) and "id" in item}
+        # 
+        # training_data = vn.get_training_data()
+        # ids_atual = training_data["id"].tolist()
+        # 
+        # for id in ids_atual:
+        #     if id not in ids_backup:
+        #         try:
+        #             vn.remove_training_data(id=id)
+        #             print(f"Removido id {id} do modelo (não está no backup)")
+        #             render_logger.info(f"🗑️ [CLEANUP] Removido ID {id} do modelo")
+        #         except Exception as e:
+        #             print(f"Erro ao remover id {id}: {e}")
+        #             render_logger.error(f"❌ [CLEANUP] Erro ao remover ID {id}: {e}")
+            
+    except Exception as e:
+        render_logger.error(f"❌ [DB] Erro na limpeza backup_only: {e}")
+        raise
 
 def save_training_plan(vn: VannaDefault, client_id: int):
     """
-    Salva o training_data atual do modelo em um arquivo JSON no formato compatível com vn.train(plan=...).
+    🔄 [MIGRATION] Refatorada para usar PostgreSQL
+    Salva o training_data atual do modelo no banco de dados
 
     Args:
         vn (VannaDefault): Instância do modelo Vanna.
-        client_id (int): ID do cliente para identificar o arquivo de treinamento.
+        client_id (int): ID do cliente para identificar o treinamento.
 
     Raises:
         Exception: Caso ocorra algum erro ao salvar o plano.
     """
-    os.makedirs(TRAINING_DIR, exist_ok=True)
-    training_file = TRAINING_FILE_TEMPLATE.format(client_id)
-
+    render_logger.info(f"💾 [DB] Salvando training_plan para cliente {client_id}")
+    
     try:
-        # Obtém o training_data atual
+        # Obtém o training_data atual do modelo Vanna
         training_data = vn.get_training_data()
-        training_data_dic = training_data.to_dict(orient='records')
-
-        # Salva o training_data no arquivo JSON
-        with open(training_file, "w", encoding="utf-8") as f:
-            json.dump(training_data_dic, f, indent=4, ensure_ascii=False)
-
-        logging.info("Training data salvo com sucesso em: %s", training_file)
+        if training_data is None or training_data.empty:
+            render_logger.warning(f"⚠️ [DB] Nenhum training_data no modelo para salvar (cliente {client_id})")
+            return
+            
+        training_data_dict = training_data.to_dict(orient='records')
+        
+        # 🔧 [NEW] Salva no PostgreSQL
+        success = db_manager.save_training_data(client_id, training_data_dict)
+        
+        if success:
+            render_logger.info(f"✅ [DB] Training plan salvo com sucesso - Cliente: {client_id}, Itens: {len(training_data_dict)}")
+        else:
+            render_logger.error(f"❌ [DB] Falha ao salvar training plan para cliente {client_id}")
+            raise Exception("Falha ao salvar no PostgreSQL")
+        
     except Exception as e:
-        logging.error("Erro ao salvar o training data: %s", e)
+        render_logger.error(f"❌ [DB] Erro ao salvar training_plan: {e}")
         raise
 
 def converter_plan_markdown_para_vanna(plan_markdown: dict) -> list:
@@ -203,25 +290,30 @@ def converter_plan_markdown_para_vanna(plan_markdown: dict) -> list:
 
 def load_training_data(vn: VannaDefault, client_id: int) -> bool:
     """
+    🔄 [MIGRATION] Refatorada para usar PostgreSQL
     Carrega o training_data salvo e reexecuta o treinamento no modelo.
 
     Args:
         vn (VannaDefault): Instância do modelo Vanna.
-        client_id (int): ID do cliente para identificar o arquivo de treinamento.
+        client_id (int): ID do cliente para identificar o treinamento.
 
     Returns:
         bool: True se o training_data foi carregado e treinado com sucesso, False caso contrário.
     """
-    training_file = TRAINING_FILE_TEMPLATE.format(client_id)
-
-    if not os.path.exists(training_file):
-        logging.warning("Arquivo de training data não encontrado: %s", training_file)
-        return False
-
+    render_logger.info(f"📖 [DB] Carregando training_data para cliente {client_id}")
+    
     try:
-        with open(training_file, "r", encoding="utf-8") as f:
-            training_data = json.load(f)
-
+        # 🔧 [NEW] Carrega do PostgreSQL
+        training_data = db_manager.load_training_data(client_id)
+        
+        if not training_data:
+            render_logger.warning(f"⚠️ [DB] Nenhum training_data encontrado para cliente {client_id}")
+            return False
+        
+        render_logger.info(f"📋 [DB] {len(training_data)} itens carregados para treinamento")
+        
+        # Aplica o treinamento no modelo Vanna (mesma lógica original)
+        trained_items = 0
         for item in training_data:
             tipo = item.get("training_data_type")
             conteudo = item.get("content")
@@ -230,27 +322,34 @@ def load_training_data(vn: VannaDefault, client_id: int) -> bool:
             if not conteudo:
                 continue  # ignora entradas sem conteúdo válido
 
-            if tipo == "ddl":
-                vn.train(ddl=conteudo)
+            try:
+                if tipo == "ddl":
+                    vn.train(ddl=conteudo)
+                    trained_items += 1
 
-            elif tipo == "sql":
-                if not pergunta:
-                    logging.warning("Entrada SQL sem 'question', id: %s", item.get("id"))
-                    continue
-                vn.train(sql=conteudo, question=pergunta)
+                elif tipo == "sql":
+                    if not pergunta:
+                        render_logger.warning(f"⚠️ [DB] Entrada SQL sem 'question', id: {item.get('id')}")
+                        continue
+                    vn.train(sql=conteudo, question=pergunta)
+                    trained_items += 1
 
-            elif tipo == "documentation":
-                vn.train(documentation=conteudo)
+                elif tipo == "documentation":
+                    vn.train(documentation=conteudo)
+                    trained_items += 1
 
-            else:
-                logging.warning("Tipo de dado de treinamento desconhecido: %s", tipo)
+                else:
+                    render_logger.warning(f"⚠️ [DB] Tipo de treinamento desconhecido: {tipo}")
+                    
+            except Exception as e:
+                render_logger.error(f"❌ [DB] Erro ao treinar item {item.get('id')}: {e}")
 
-        logging.info("Training data carregado e aplicado com sucesso de: %s", training_file)
+        render_logger.info(f"✅ [DB] Training data aplicado com sucesso - Cliente: {client_id}, Itens treinados: {trained_items}/{len(training_data)}")
         return True
-
+            
     except Exception as e:
-        logging.error("Erro ao carregar ou aplicar o training data: %s", e)
-        raise
+        render_logger.error(f"❌ [DB] Erro ao carregar training_data: {e}")
+        return False
 
 def treinar_com_ddl(id_client: int, vn: VannaDefault):
     # gera o dict {tabela: ddl_sql, ...}
@@ -871,16 +970,26 @@ def limpar_data_training(vn, id_client=None):
             print("🧹 [VANNA] Removendo apenas dados adicionados durante a sessão...")
             
             # Carrega IDs do backup original
-            backup_path = get_abs_path("arq", "dados_treinados.json")
-            if not os.path.exists(backup_path):
-                print("⚠️ [VANNA] Arquivo de backup não encontrado, removendo todos os dados")
+            # 🔧 [NEW] Carrega do PostgreSQL ao invés do arquivo
+            ids_backup = db_manager.get_training_data_ids(client_id=None)  # client_id=None = dados globais
+            if not ids_backup:
+                print("⚠️ [VANNA] Nenhum backup encontrado no PostgreSQL, removendo todos os dados")
                 # Se não há backup, remove tudo
                 return limpar_data_training_completo(vn)
             
-            with open(backup_path, "r", encoding="utf-8") as f:
-                dados_backup = json.load(f)
-            ids_backup = {item["id"] for item in dados_backup if isinstance(item, dict) and "id" in item}
-            print(f"📋 [VANNA] {len(ids_backup)} IDs no backup original")
+            print(f"📋 [VANNA] {len(ids_backup)} IDs no backup PostgreSQL")
+            
+            # 📁 [OLD] Código original comentado
+            # backup_path = get_abs_path("arq", "dados_treinados.json")
+            # if not os.path.exists(backup_path):
+            #     print("⚠️ [VANNA] Arquivo de backup não encontrado, removendo todos os dados")
+            #     # Se não há backup, remove tudo
+            #     return limpar_data_training_completo(vn)
+            # 
+            # with open(backup_path, "r", encoding="utf-8") as f:
+            #     dados_backup = json.load(f)
+            # ids_backup = {item["id"] for item in dados_backup if isinstance(item, dict) and "id" in item}
+            # print(f"📋 [VANNA] {len(ids_backup)} IDs no backup original")
             
             # Obtém dados atuais do modelo
             training_data = vn.get_training_data()

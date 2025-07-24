@@ -4,9 +4,12 @@ from vanna.flask import VannaFlaskApp
 import pandas as pd
 import psycopg2
 import os
-from dotenv import load_dotenv
 import logging
 import json
+from dotenv import load_dotenv
+
+# � [MIGRATION] Import do DatabaseManager
+from database_manager import db_manager
 
 # Configuração do log para visualizar cada etapa
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -162,22 +165,32 @@ VannaFlaskApp(vn, allow_llm_to_see_data=True).run()
 #     except Exception as e:
 #         print(f"Erro ao remover {item_id}: {e}")
 
-# Salvando dados treinados em um arquivo JSON
-logging.info("Salvando dados treinados em arquivo...")
+# Salvando dados treinados - 🔄 [MIGRATION] Refatorado para PostgreSQL
+logging.info("💾 [DB] Salvando dados treinados no PostgreSQL...")
 training_data = vn.get_training_data()  # Atualiza
-training_data_dict = training_data.to_dict(orient="records")
 
-# #função que remove por id o trainign data de acordo com o arq/dados_treinados.json
+# 🔄 [MIGRATION] Salva no PostgreSQL ao invés de arquivo JSON
+try:
+    training_data_dict = training_data.to_dict(orient="records")
+    
+    # Salva como dados globais (backup) no PostgreSQL
+    success = db_manager.save_training_data(client_id=None, training_data=training_data_dict)
+    
+    if success:
+        logging.info("✅ [DB] Dados de treinamento salvos no PostgreSQL como backup global")
+    else:
+        logging.error("❌ [DB] Falha ao salvar dados de treinamento no PostgreSQL")
+    
+except Exception as e:
+    logging.error(f"❌ [DB] Erro ao salvar training data no PostgreSQL: {e}")
 
-training_data_dict = training_data.to_dict(orient="records")
-os.makedirs("arq", exist_ok=True)
-file = os.path.join("arq", "dados_treinados.json")
-with open(file, "w", encoding="utf-8") as f:
-    json.dump(training_data_dict, f, indent=4, ensure_ascii=False)
-logging.info("Arquivo de dados treinados salvo em: %s", file)
+# 📁 [OLD] Código original comentado - manter por segurança
+# training_data_dict = training_data.to_dict(orient="records")
+# os.makedirs("arq", exist_ok=True)
+# file = os.path.join("arq", "dados_treinados.json")
+# with open(file, "w", encoding="utf-8") as f:
+#     json.dump(training_data_dict, f, indent=4, ensure_ascii=False)
+# logging.info("Arquivo de dados treinados salvo em: %s", file)
 
-logging.info("Arquivo 'dados_treinados.json' criado com sucesso!")
+logging.info("✅ [DB] Training data salvo no PostgreSQL com sucesso!")
 logging.info("==== Vanna Flask App - Encerrado ====")
-
-
-
