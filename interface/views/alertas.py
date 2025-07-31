@@ -208,7 +208,7 @@ def mostrar_dashboard_alertas(client_id: int):
                     remover_alerta(alerta['id'], client_id)
 
 def configurar_alertas(client_id: int):
-    """Interface para configurar novos alertas"""
+    """Interface dinâmica para configurar novos alertas"""
     st.subheader("⚙️ Configurar Novo Alerta")
     
     # Obter tabelas do usuário
@@ -218,63 +218,295 @@ def configurar_alertas(client_id: int):
         st.warning("Você precisa ter tabelas importadas para configurar alertas. Vá para Configurações → Upload CSV.")
         return
     
-    with st.form("novo_alerta"):
+    # Inicializar session_state para controle de progresso
+    if "alerta_progresso" not in st.session_state:
+        st.session_state.alerta_progresso = {
+            "passo": 1,
+            "tabela_selecionada": None,
+            "tipo_alerta": None,
+            "dados_formulario": {}
+        }
+    
+    # Função para resetar progresso
+    def resetar_formulario():
+        st.session_state.alerta_progresso = {
+            "passo": 1,
+            "tabela_selecionada": None,
+            "tipo_alerta": None,
+            "dados_formulario": {}
+        }
+    
+    # Botão para resetar (pequeno, no canto)
+    col_reset, col_space = st.columns([1, 4])
+    with col_reset:
+        if st.button("🔄 Recomeçar", help="Limpar formulário e começar novamente"):
+            resetar_formulario()
+            st.rerun()
+    
+    # Barra de progresso visual
+    progresso = st.session_state.alerta_progresso["passo"]
+    progress_bar = st.progress(progresso / 5)
+    
+    # Títulos dos passos
+    passos = [
+        "1️⃣ Selecionar Tabela",
+        "2️⃣ Configurar Tipo",
+        "3️⃣ Definir Condição",
+        "4️⃣ Configurações Avançadas",
+        "5️⃣ Finalizar"
+    ]
+    
+    # Mostra em qual passo está
+    st.info(f"**Passo {progresso} de 5:** {passos[progresso-1]}")
+    
+    # ===================== PASSO 1: SELEÇÃO DE TABELA =====================
+    if progresso >= 1:
+        st.subheader("📊 Escolha a Tabela")
+        
+        # Lista as tabelas com informações
+        with st.expander("📋 Tabelas Disponíveis", expanded=(progresso == 1)):
+            for i, tabela in enumerate(tabelas_usuario):
+                colunas = obter_colunas_tabela(tabela)
+                st.write(f"**{tabela}**: {len(colunas)} colunas ({', '.join(colunas[:3])}{'...' if len(colunas) > 3 else ''})")
+        
+        tabela_selecionada = st.selectbox(
+            "Selecione a tabela para monitorar:",
+            [""] + tabelas_usuario,
+            index=tabelas_usuario.index(st.session_state.alerta_progresso["tabela_selecionada"]) + 1 
+                  if st.session_state.alerta_progresso["tabela_selecionada"] in tabelas_usuario else 0,
+            key="select_tabela"
+        )
+        
+        if tabela_selecionada and tabela_selecionada != st.session_state.alerta_progresso["tabela_selecionada"]:
+            st.session_state.alerta_progresso["tabela_selecionada"] = tabela_selecionada
+            st.session_state.alerta_progresso["passo"] = 2
+            st.rerun()
+        
+        if not tabela_selecionada:
+            st.info("👆 Selecione uma tabela para continuar")
+            return
+    
+    # ===================== PASSO 2: TIPO DE ALERTA =====================
+    if progresso >= 2:
+        st.subheader("⚙️ Tipo de Alerta")
+        
+        # Mostra informações da tabela selecionada
+        tabela = st.session_state.alerta_progresso["tabela_selecionada"]
+        colunas = obter_colunas_tabela(tabela)
+        
+        st.success(f"✅ **Tabela selecionada:** {tabela} ({len(colunas)} colunas)")
+        
+        # Informações sobre tipos de alerta
+        tipos_info = {
+            "Valor Simples": "Monitora o valor de uma única célula ou registro",
+            "Agregação": "Monitora valores agregados (soma, média, contagem, etc.)",
+            "Crescimento %": "Compara crescimento percentual entre períodos",
+            "Comparação Período": "Compara valores entre diferentes períodos"
+        }
+        
+        with st.expander("ℹ️ Informações sobre Tipos de Alerta", expanded=(progresso == 2)):
+            for tipo, descricao in tipos_info.items():
+                st.write(f"**{tipo}:** {descricao}")
+        
+        tipo_alerta = st.selectbox(
+            "Tipo de Alerta:",
+            [""] + list(tipos_info.keys()),
+            index=list(tipos_info.keys()).index(st.session_state.alerta_progresso["tipo_alerta"]) + 1 
+                  if st.session_state.alerta_progresso["tipo_alerta"] in tipos_info.keys() else 0,
+            key="select_tipo"
+        )
+        
+        nome_alerta = st.text_input(
+            "Nome do Alerta:",
+            value=st.session_state.alerta_progresso["dados_formulario"].get("nome", ""),
+            placeholder="Ex: Vendas Baixas, CTR Abaixo do Normal",
+            key="input_nome"
+        )
+        
+        if tipo_alerta and nome_alerta and (
+            tipo_alerta != st.session_state.alerta_progresso["tipo_alerta"] or 
+            nome_alerta != st.session_state.alerta_progresso["dados_formulario"].get("nome", "")
+        ):
+            st.session_state.alerta_progresso["tipo_alerta"] = tipo_alerta
+            st.session_state.alerta_progresso["dados_formulario"]["nome"] = nome_alerta
+            st.session_state.alerta_progresso["passo"] = 3
+            st.rerun()
+        
+        if not tipo_alerta or not nome_alerta:
+            st.info("👆 Selecione o tipo de alerta e dê um nome para continuar")
+            return
+    
+    # ===================== PASSO 3: CONDIÇÕES =====================
+    if progresso >= 3:
+        st.subheader("🎯 Definir Condição do Alerta")
+        
+        # Resume o que foi selecionado
+        st.success(f"✅ **{st.session_state.alerta_progresso['dados_formulario']['nome']}** ({st.session_state.alerta_progresso['tipo_alerta']}) na tabela **{tabela}**")
+        
         col1, col2 = st.columns(2)
         
         with col1:
-            nome_alerta = st.text_input("Nome do Alerta", placeholder="Ex: Vendas Baixas")
-            
-            tipo_alerta = st.selectbox(
-                "Tipo de Alerta",
-                ["Valor Simples", "Agregação", "Crescimento %", "Comparação Período"]
+            # Seleção de coluna
+            coluna_selecionada = st.selectbox(
+                "Coluna a monitorar:",
+                [""] + colunas,
+                index=colunas.index(st.session_state.alerta_progresso["dados_formulario"].get("coluna", "")) + 1 
+                      if st.session_state.alerta_progresso["dados_formulario"].get("coluna") in colunas else 0,
+                key="select_coluna"
             )
             
-            tabela_selecionada = st.selectbox("Tabela", tabelas_usuario)
+            # Condição
+            condicao = st.selectbox(
+                "Condição:",
+                ["", "Maior que", "Menor que", "Igual a", "Diferente de"],
+                index=["", "Maior que", "Menor que", "Igual a", "Diferente de"].index(
+                    st.session_state.alerta_progresso["dados_formulario"].get("condicao", "")
+                ) if st.session_state.alerta_progresso["dados_formulario"].get("condicao") in 
+                    ["", "Maior que", "Menor que", "Igual a", "Diferente de"] else 0,
+                key="select_condicao"
+            )
         
         with col2:
-            if tabela_selecionada:
-                colunas = obter_colunas_tabela(tabela_selecionada)
-                coluna_selecionada = st.selectbox("Coluna", colunas)
+            # Valor limite
+            valor_limite = st.number_input(
+                "Valor Limite:",
+                value=float(st.session_state.alerta_progresso["dados_formulario"].get("valor_limite", 0.0)),
+                key="input_valor_limite"
+            )
+            
+            # Preview da condição
+            if coluna_selecionada and condicao:
+                st.info(f"🎯 **Condição:** {coluna_selecionada} {condicao.lower()} {valor_limite}")
+        
+        # Atualiza dados e avança se tudo preenchido
+        if coluna_selecionada and condicao:
+            if (coluna_selecionada != st.session_state.alerta_progresso["dados_formulario"].get("coluna") or
+                condicao != st.session_state.alerta_progresso["dados_formulario"].get("condicao") or
+                valor_limite != st.session_state.alerta_progresso["dados_formulario"].get("valor_limite")):
                 
-                condicao = st.selectbox("Condição", ["Maior que", "Menor que", "Igual a", "Diferente de"])
-                
-                valor_limite = st.number_input("Valor Limite", value=0.0)
-        
-        # Configurações avançadas
-        st.subheader("Configurações Avançadas")
-        
-        col3, col4 = st.columns(2)
-        with col3:
-            frequencia = st.selectbox("Frequência", ["Manual", "A cada 5 min", "Diário", "Semanal"])
-            ativo = st.checkbox("Alerta Ativo", value=True)
-        
-        with col4:
-            # Usa o email do login como padrão
-            email_padrao = st.session_state.get("email", "")
-            email_notificacao = st.text_input("Email para Notificação", value=email_padrao)
-            incluir_grafico = st.checkbox("Incluir Gráfico nos Alertas")
-        
-        # Botão de salvar
-        if st.form_submit_button("💾 Salvar Alerta", type="primary"):
-            if nome_alerta and tabela_selecionada and coluna_selecionada:
-                sucesso = salvar_alerta(client_id, {
-                    'nome': nome_alerta,
-                    'tipo': tipo_alerta,
-                    'tabela': tabela_selecionada,
-                    'coluna': coluna_selecionada,
-                    'condicao': condicao,
-                    'valor_limite': valor_limite,
-                    'frequencia': frequencia,
-                    'ativo': ativo,
-                    'email': email_notificacao,
-                    'incluir_grafico': incluir_grafico
+                st.session_state.alerta_progresso["dados_formulario"].update({
+                    "coluna": coluna_selecionada,
+                    "condicao": condicao,
+                    "valor_limite": valor_limite
                 })
+                st.session_state.alerta_progresso["passo"] = 4
+                st.rerun()
+        else:
+            st.info("👆 Configure a coluna e condição para continuar")
+            return
+    
+    # ===================== PASSO 4: CONFIGURAÇÕES AVANÇADAS =====================
+    if progresso >= 4:
+        st.subheader("⚙️ Configurações Avançadas")
+        
+        # Resume configuração atual
+        dados = st.session_state.alerta_progresso["dados_formulario"]
+        st.success(f"✅ **{dados['nome']}**: {dados['coluna']} {dados['condicao'].lower()} {dados['valor_limite']}")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**⏱️ Frequência:**")
+            frequencia = st.selectbox(
+                "Com que frequência verificar:",
+                ["Manual", "A cada 5 min", "Diário", "Semanal"],
+                index=["Manual", "A cada 5 min", "Diário", "Semanal"].index(
+                    st.session_state.alerta_progresso["dados_formulario"].get("frequencia", "Manual")
+                ),
+                key="select_frequencia"
+            )
+            
+            ativo = st.checkbox(
+                "Alerta ativo",
+                value=st.session_state.alerta_progresso["dados_formulario"].get("ativo", True),
+                key="check_ativo"
+            )
+        
+        with col2:
+            st.write("**📧 Notificações:**")
+            email_padrao = st.session_state.get("email", "")
+            email_notificacao = st.text_input(
+                "Email para notificação:",
+                value=st.session_state.alerta_progresso["dados_formulario"].get("email", email_padrao),
+                key="input_email"
+            )
+            
+            incluir_grafico = st.checkbox(
+                "Incluir gráfico nos alertas",
+                value=st.session_state.alerta_progresso["dados_formulario"].get("incluir_grafico", False),
+                key="check_grafico"
+            )
+        
+        # Atualiza dados
+        st.session_state.alerta_progresso["dados_formulario"].update({
+            "frequencia": frequencia,
+            "ativo": ativo,
+            "email": email_notificacao,
+            "incluir_grafico": incluir_grafico
+        })
+        
+        # Avança para finalização
+        if st.button("➡️ Revisar e Finalizar", type="secondary"):
+            st.session_state.alerta_progresso["passo"] = 5
+            st.rerun()
+    
+    # ===================== PASSO 5: FINALIZAÇÃO =====================
+    if progresso >= 5:
+        st.subheader("✅ Revisar e Salvar")
+        
+        dados = st.session_state.alerta_progresso["dados_formulario"]
+        tabela = st.session_state.alerta_progresso["tabela_selecionada"]
+        tipo = st.session_state.alerta_progresso["tipo_alerta"]
+        
+        # Resumo completo
+        st.info("📋 **Resumo do Alerta Configurado:**")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Nome:** {dados['nome']}")
+            st.write(f"**Tipo:** {tipo}")
+            st.write(f"**Tabela:** {tabela}")
+            st.write(f"**Coluna:** {dados['coluna']}")
+        
+        with col2:
+            st.write(f"**Condição:** {dados['coluna']} {dados['condicao'].lower()} {dados['valor_limite']}")
+            st.write(f"**Frequência:** {dados['frequencia']}")
+            st.write(f"**Status:** {'Ativo' if dados['ativo'] else 'Inativo'}")
+            st.write(f"**Email:** {dados['email'] or 'Não configurado'}")
+        
+        # Botões finais
+        col_save, col_back = st.columns(2)
+        
+        with col_save:
+            if st.button("💾 Salvar Alerta", type="primary"):
+                # Combina todos os dados
+                alerta_completo = {
+                    'nome': dados['nome'],
+                    'tipo': tipo,
+                    'tabela': tabela,
+                    'coluna': dados['coluna'],
+                    'condicao': dados['condicao'],
+                    'valor_limite': dados['valor_limite'],
+                    'frequencia': dados['frequencia'],
+                    'ativo': dados['ativo'],
+                    'email': dados['email'],
+                    'incluir_grafico': dados['incluir_grafico']
+                }
+                
+                sucesso = salvar_alerta(client_id, alerta_completo)
                 
                 if sucesso:
                     st.success("✅ Alerta configurado com sucesso!")
+                    # Limpa o formulário após salvar
+                    resetar_formulario()
                     st.rerun()
-            else:
-                st.error("❌ Preencha todos os campos obrigatórios!")
+                else:
+                    st.error("❌ Erro ao salvar alerta. Tente novamente.")
+        
+        with col_back:
+            if st.button("👈 Voltar para Configurações"):
+                st.session_state.alerta_progresso["passo"] = 4
+                st.rerun()
 
 def mostrar_historico_alertas(client_id: int):
     """Mostra histórico de alertas disparados"""
